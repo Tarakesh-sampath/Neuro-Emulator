@@ -8,6 +8,7 @@
 * Arithmetic & logic operations
 * Control flow: jumps, calls, returns, conditional branches
 * Timing & instruction cycles
+* instruction set refference [Here](https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html)
 
 ### 📦 2. **Memory Map**
 
