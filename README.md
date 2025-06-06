@@ -199,14 +199,3 @@
 ```
 
 ---
-
-## ✅ Next Step Options:
-
-Would you like to now:
-
-1. Start designing the **neural PPU pipeline**?
-2. Begin coding the **CPU + memory** emulator core?
-3. Set up a **GBDK game boilerplate** for testing?
-4. Or define **training dataset structure** for PPU learning?
-
-Let’s get this machine rolling.
