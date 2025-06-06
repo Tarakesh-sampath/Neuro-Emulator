@@ -25,6 +25,11 @@ private:
     std::vector<uint8_t> hram;
 
     uint8_t ie;
+
+    uint8_t currentRomBank = 1;
+    uint8_t currentRamBank = 0;
+    bool ramEnabled = false;
+    uint8_t bankingMode = 0;  // 0 = ROM banking mode, 1 = RAM banking mode
 };
 
 #endif // MEMORY_H

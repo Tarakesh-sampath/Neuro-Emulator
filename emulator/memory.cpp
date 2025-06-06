@@ -31,21 +31,41 @@ public:
         hram.resize(0x7F);    // High RAM
 
         ie = 0x00;            // Interrupt Enable Register
+
+        // Initialize MBC1 banking variables
+        currentRomBank = 1;
+        currentRamBank = 0;
+        ramEnabled = false;
+        bankingMode = 0;
     }
 
     uint8_t read_byte(uint16_t addr) {
-        if (addr <= 0x7FFF) {
-            // Reading from ROM
+        if (addr <= 0x3FFF) {
+            // Fixed bank 0
             if (addr < rom.size())
                 return rom[addr];
             else
-                return 0xFF; // Out of bounds, return 0xFF
+                return 0xFF;
+        }
+        else if (addr >= 0x4000 && addr <= 0x7FFF) {
+            // Switchable ROM bank
+            uint32_t bankAddr = (currentRomBank * 0x4000) + (addr - 0x4000);
+            if (bankAddr < rom.size())
+                return rom[bankAddr];
+            else
+                return 0xFF;
         }
         else if (addr >= 0x8000 && addr <= 0x9FFF) {
             return vram[addr - 0x8000];
         }
         else if (addr >= 0xA000 && addr <= 0xBFFF) {
-            return eram[addr - 0xA000];
+            if (!ramEnabled)
+                return 0xFF;
+            uint32_t ramAddr = (currentRamBank * 0x2000) + (addr - 0xA000);
+            if (ramAddr < eram.size())
+                return eram[ramAddr];
+            else
+                return 0xFF;
         }
         else if (addr >= 0xC000 && addr <= 0xDFFF) {
             return wram[addr - 0xC000];
@@ -68,14 +88,43 @@ public:
     }
 
     void write_byte(uint16_t addr, uint8_t value) {
-        if (addr <= 0x7FFF) {
-            // ROM is read-only, ignore writes here
+        if (addr <= 0x1FFF) {
+            // RAM Enable register
+            ramEnabled = ((value & 0x0F) == 0x0A);
+        }
+        else if (addr >= 0x2000 && addr <= 0x3FFF) {
+            // ROM bank number (lower 5 bits)
+            uint8_t bankNum = value & 0x1F;
+            if (bankNum == 0)
+                bankNum = 1;
+            currentRomBank = (currentRomBank & 0x60) | bankNum;
+        }
+        else if (addr >= 0x4000 && addr <= 0x5FFF) {
+            // RAM bank number or upper bits of ROM bank depending on bankingMode
+            uint8_t bits = value & 0x03;
+            if (bankingMode == 0) {
+                currentRomBank = (bits << 5) | (currentRomBank & 0x1F);
+            } else {
+                currentRamBank = bits;
+            }
+        }
+        else if (addr >= 0x6000 && addr <= 0x7FFF) {
+            // Banking mode select
+            bankingMode = value & 0x01;
+            if (bankingMode == 0) {
+                currentRamBank = 0;
+            }
         }
         else if (addr >= 0x8000 && addr <= 0x9FFF) {
             vram[addr - 0x8000] = value;
         }
         else if (addr >= 0xA000 && addr <= 0xBFFF) {
-            eram[addr - 0xA000] = value;
+            if (!ramEnabled)
+                return;
+            uint32_t ramAddr = (currentRamBank * 0x2000) + (addr - 0xA000);
+            if (ramAddr < eram.size()) {
+                eram[ramAddr] = value;
+            }
         }
         else if (addr >= 0xC000 && addr <= 0xDFFF) {
             wram[addr - 0xC000] = value;
@@ -105,6 +154,12 @@ private:
     std::vector<uint8_t> hram;
 
     uint8_t ie;
+
+    // MBC1 variables
+    uint8_t currentRomBank;
+    uint8_t currentRamBank;
+    bool ramEnabled;
+    uint8_t bankingMode;
 };
 
 int main(int argc, char* argv[]) {
