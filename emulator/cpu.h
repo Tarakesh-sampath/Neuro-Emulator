@@ -15,7 +15,6 @@ class CPU {
 public:
     CPU(Memory& mem, const OpcodeTable& table);
 
-    // Execute one CPU instruction cycle (fetch-decode-execute)
     void Step();
 
     // Flag getters/setters
@@ -27,6 +26,7 @@ public:
     void setFlagH(bool v);
     bool getFlagC() const;
     void setFlagC(bool v);
+    uint16_t getPC() const { return PC; }
 
 private:
     Memory& mem;
@@ -35,20 +35,24 @@ private:
     uint16_t PC; // Program Counter
     uint16_t SP; // Stack Pointer
 
-    // 8-bit registers
     uint8_t A, F, B, C, D, E, H, L;
 
-    // Opcode mnemonic to handler function map
+    bool ime;    // Interrupt Master Enable flag
+
     std::unordered_map<std::string, std::function<void()>> handlers;
 
-    // Opcode handler functions
     void handleNOP();
     void handleJP();
     void handleLD_B_n();
     void handleINC_B();
     void handleADD_A_B();
 
-    // More handlers will be added here as implemented
+    void handleEI();  // Enable interrupts
+    void handleDI();  // Disable interrupts
+
+    void handleRETI(); // Return from interrupt
+
+    void handleInterrupts();
 };
 
 #endif // CPU_H

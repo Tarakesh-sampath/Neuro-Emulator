@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "joypad.h"
 
 class Memory {
 public:
@@ -14,8 +15,10 @@ public:
 
     uint8_t read_byte(uint16_t addr);
     void write_byte(uint16_t addr, uint8_t value);
+    Joypad joypad;
 
-private:
+    uint8_t ie;
+
     std::vector<uint8_t> rom;
     std::vector<uint8_t> vram;
     std::vector<uint8_t> wram;
@@ -23,8 +26,8 @@ private:
     std::vector<uint8_t> oam;
     std::vector<uint8_t> io_regs;
     std::vector<uint8_t> hram;
-
-    uint8_t ie;
+    
+private:
 
     uint8_t currentRomBank = 1;
     uint8_t currentRamBank = 0;

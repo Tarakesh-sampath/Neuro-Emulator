@@ -2,10 +2,11 @@
 #include <fstream>
 #include <vector>
 #include <cstdint>
+#include "memory.h"
+#include "joypad.h"
 
-class Memory {
-public:
-    Memory(const std::string& rom_path) {
+
+Memory::Memory(const std::string& rom_path): joypad(*this) {
         // Load ROM data
         std::ifstream romFile(rom_path, std::ios::binary | std::ios::ate);
         if (!romFile.is_open()) {
@@ -37,9 +38,14 @@ public:
         currentRamBank = 0;
         ramEnabled = false;
         bankingMode = 0;
-    }
-
-    uint8_t read_byte(uint16_t addr) {
+        
+         
+}
+     
+uint8_t Memory::read_byte(uint16_t addr) {
+        if (addr == 0xFF00) {
+          return joypad.readJoypadRegister();
+        }
         if (addr <= 0x3FFF) {
             // Fixed bank 0
             if (addr < rom.size())
@@ -85,9 +91,13 @@ public:
         else {
             return 0xFF;
         }
-    }
+}
 
-    void write_byte(uint16_t addr, uint8_t value) {
+void Memory::write_byte(uint16_t addr, uint8_t value) {
+        if (addr == 0xFF00) {
+            joypad.writeJoypadRegister(value);
+            return;
+        }
         if (addr <= 0x1FFF) {
             // RAM Enable register
             ramEnabled = ((value & 0x0F) == 0x0A);
@@ -142,37 +152,4 @@ public:
             ie = value;
         }
         // Ignore other writes
-    }
-
-private:
-    std::vector<uint8_t> rom;
-    std::vector<uint8_t> vram;
-    std::vector<uint8_t> wram;
-    std::vector<uint8_t> eram;
-    std::vector<uint8_t> oam;
-    std::vector<uint8_t> io_regs;
-    std::vector<uint8_t> hram;
-
-    uint8_t ie;
-
-    // MBC1 variables
-    uint8_t currentRomBank;
-    uint8_t currentRamBank;
-    bool ramEnabled;
-    uint8_t bankingMode;
-};
-
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cerr << "Usage: emulator <path_to_rom.gb>" << std::endl;
-        return 1;
-    }
-
-    Memory memory(argv[1]);
-
-    // Basic test: read first byte of ROM
-    uint8_t firstByte = memory.read_byte(0x0000);
-    std::cout << "First byte of ROM: 0x" << std::hex << (int)firstByte << std::endl;
-
-    return 0;
 }
