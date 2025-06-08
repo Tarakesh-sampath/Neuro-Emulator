@@ -68,6 +68,12 @@ void CPU::initOpTable() {
     opTable[0x22] = &CPU::op_LD_indHL_inc_A;
     opTable[0x32] = &CPU::op_LD_indHL_dec_A;
     opTable[0xF0] = &CPU::op_LDH_A_a8;
+    opTable[0x11] = &CPU::op_LD_DE_d16;
+    opTable[0x12] = &CPU::op_LD_indDE_A;
+    opTable[0x1C] = &CPU::op_INC_E;
+    opTable[0x1D] = &CPU::op_DEC_E;
+    opTable[0x14] = &CPU::op_INC_D;
+    opTable[0x15] = &CPU::op_DEC_D;
     
     // LD r, r' (except LD (HL),(HL) which is HALT)
     for (int op = 0x40; op < 0x80; ++op) {
@@ -359,6 +365,13 @@ void CPU::op_LD_HL_d16() {
     l = low;
 }
 
+void CPU::op_LD_DE_d16() {
+    uint8_t low = memory.readByte(pc++);
+    uint8_t high = memory.readByte(pc++);
+    d = high;
+    e = low;
+}
+
 //Load HL
 void CPU::op_LD_A_indHL_inc() {
     uint16_t addr = (h << 8) | l;
@@ -391,7 +404,10 @@ void CPU::op_LD_indHL_dec_A() {
     h = (addr >> 8) & 0xFF;
     l = addr & 0xFF;
 }
-
+void CPU::op_LD_indDE_A() {
+    uint16_t addr = (d << 8) | e;
+    memory.writeByte(addr, a);
+}
 //Reset
 void CPU::op_RST_18() {
     // Push PC (high byte then low) onto stack
@@ -535,6 +551,21 @@ void CPU::op_INC_DE() {
     d = (de >> 8) & 0xFF;
     e = de & 0xFF;
 }
+void CPU::op_INC_E() {
+    uint8_t result = e + 1;
+    f &= FLAG_C;            // Preserve C, clear others
+    if (result == 0) f |= FLAG_Z;
+    if ((e & 0x0F) == 0x0F) f |= FLAG_H;
+    e = result;
+}
+
+void CPU::op_INC_D() {
+    uint8_t result = d + 1;
+    f &= FLAG_C;
+    if (result == 0) f |= FLAG_Z;
+    if ((d & 0x0F) == 0x0F) f |= FLAG_H;
+    d = result;
+}
 
 //dec 16-bit
 void CPU::op_DEC_BC() {
@@ -552,6 +583,19 @@ void CPU::op_DEC_DE() {
 }
 
 
+void CPU::op_DEC_E() {
+    f = (f & FLAG_C) | FLAG_N;
+    if ((e & 0xF) == 0) f |= FLAG_H;
+    e = e - 1;
+    if (e == 0) f |= FLAG_Z;
+}
+
+void CPU::op_DEC_D() {
+    f = (f & FLAG_C) | FLAG_N;
+    if ((d & 0xF) == 0) f |= FLAG_H;
+    d = d - 1;
+    if (d == 0) f |= FLAG_Z;
+}
 
 // Helper: Return ref to register by GB index
 uint8_t& CPU::reg8(int idx) {

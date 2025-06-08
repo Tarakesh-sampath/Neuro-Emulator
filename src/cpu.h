@@ -102,12 +102,14 @@ private:
     void op_LD_SP_d16();
     void op_LD_a16_A();
     void op_LD_HL_d16();
+    void op_LD_DE_d16();
 
     //Load HL
     void op_LD_A_indHL_inc();
     void op_LD_A_indHL_dec();
     void op_LD_indHL_inc_A();
     void op_LD_indHL_dec_A();
+    void op_LD_indDE_A();
     
     
     
@@ -142,11 +144,15 @@ private:
     //inc 16-bit
     void op_INC_HL();
     void op_INC_DE();
+    void op_INC_E();
+    void op_INC_D();
 
     
     //dec16-bit
     void op_DEC_BC();
     void op_DEC_DE();
+    void op_DEC_E();
+    void op_DEC_D();
         
 };
 
