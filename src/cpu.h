@@ -49,7 +49,8 @@ private:
 
     void initOpTable();
 
-    uint8_t& reg8(int idx);
+    uint8_t reg8_read(int idx) const;
+    void reg8_write(int idx, uint8_t val);
     bool ime_enabled = false; // Interrupt Master Enable
 
     // ALU group

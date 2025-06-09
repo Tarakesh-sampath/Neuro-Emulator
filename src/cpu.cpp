@@ -15,6 +15,48 @@ CPU::CPU(Memory& mem) : memory(mem),
     initOpTable();
 }
 
+
+// Helper: Return ref to register by GB index
+uint8_t CPU::reg8_read(int idx) const {
+    switch (idx) {
+        case 0: return b;
+        case 1: return c;
+        case 2: return d;
+        case 3: return e;
+        case 4: return h;
+        case 5: return l;
+        case 6: return memory.readByte((h << 8) | l);
+        case 7: return a;
+        default: throw std::out_of_range("Bad reg8 index");
+    }
+}
+
+void CPU::reg8_write(int idx, uint8_t val) {
+    switch (idx) {
+        case 0: b = val; break;
+        case 1: c = val; break;
+        case 2: d = val; break;
+        case 3: e = val; break;
+        case 4: h = val; break;
+        case 5: l = val; break;
+        case 6: memory.writeByte((h << 8) | l, val); break;
+        case 7: a = val; break;
+        default: throw std::out_of_range("Bad reg8 index");
+    }
+}
+// Main step: fetch-decode-execute
+void CPU::step() {
+    uint8_t opcode = memory.readByte(pc++);
+    (this->*opTable[opcode])();
+}
+
+// -------- Register dump for debug --------
+void CPU::dumpState() const {
+    printf("PC:%04X SP:%04X | AF:%02X%02X BC:%02X%02X DE:%02X%02X HL:%02X%02X\n",
+           pc, sp, a, f, b, c, d, e, h, l);
+}
+
+
 void CPU::initOpTable() {
     for (int i = 0; i < 0x100; ++i) opTable[i] = &CPU::op_UNIMPLEMENTED;
     for (int i = 0; i < 0x100; ++i) cbOpTable[i] = &CPU::op_UNIMPLEMENTED; // Default for CB
@@ -107,12 +149,6 @@ void CPU::initOpTable() {
     for (int op = 0xB8; op <= 0xBF; ++op) opTable[op] = &CPU::op_CP_A_r;
 }
 
-// Main step: fetch-decode-execute
-void CPU::step() {
-    uint8_t opcode = memory.readByte(pc++);
-    (this->*opTable[opcode])();
-}
-
 // ----- Opcode implementations -----
 
 void CPU::op_NOP() {
@@ -167,11 +203,12 @@ void CPU::op_LD_r_r() {
     int src  = opcode & 0x7;
     if (dest == 6) { // (HL),r
         uint16_t addr = (h << 8) | l;
-        memory.writeByte(addr, reg8(src));
+        memory.writeByte(addr, reg8_read(src));
     } else if (src == 6) { // r,(HL)
-        reg8(dest) = memory.readByte((h << 8) | l);
+        reg8_write(dest , memory.readByte((h << 8) | l));
+        
     } else {
-        reg8(dest) = reg8(src);
+        reg8_write(dest,reg8_read(src));
     }
 }
 
@@ -182,7 +219,7 @@ void CPU::op_LD_r_d8() {
     if (dest == 6) { // LD (HL),d8
         memory.writeByte((h << 8) | l, memory.readByte(pc++));
     } else {
-        reg8(dest) = memory.readByte(pc++);
+        reg8_write(dest,memory.readByte(pc++));
     }
 }
 // ALU operation helpers (update all flags per GB rules)
@@ -234,49 +271,49 @@ void CPU::alu_cp(uint8_t value) {
 void CPU::op_ADD_A_r() {
     uint8_t opcode = memory.readByte(pc - 1);
     int src = opcode & 0x7;
-    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8(src);
+    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8_read(src);
     alu_add(value, false);
 }
 void CPU::op_ADC_A_r() {
     uint8_t opcode = memory.readByte(pc - 1);
     int src = opcode & 0x7;
-    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8(src);
+    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8_read(src);
     alu_add(value, true);
 }
 void CPU::op_SUB_A_r() {
     uint8_t opcode = memory.readByte(pc - 1);
     int src = opcode & 0x7;
-    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8(src);
+    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8_read(src);
     alu_sub(value, false);
 }
 void CPU::op_SBC_A_r() {
     uint8_t opcode = memory.readByte(pc - 1);
     int src = opcode & 0x7;
-    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8(src);
+    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8_read(src);
     alu_sub(value, true);
 }
 void CPU::op_AND_A_r() {
     uint8_t opcode = memory.readByte(pc - 1);
     int src = opcode & 0x7;
-    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8(src);
+    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8_read(src);
     alu_and(value);
 }
 void CPU::op_OR_A_r() {
     uint8_t opcode = memory.readByte(pc - 1);
     int src = opcode & 0x7;
-    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8(src);
+    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8_read(src);
     alu_or(value);
 }
 void CPU::op_XOR_A_r() {
     uint8_t opcode = memory.readByte(pc - 1);
     int src = opcode & 0x7;
-    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8(src);
+    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8_read(src);
     alu_xor(value);
 }
 void CPU::op_CP_A_r() {
     uint8_t opcode = memory.readByte(pc - 1);
     int src = opcode & 0x7;
-    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8(src);
+    uint8_t value = (src == 6) ? memory.readByte((h << 8) | l) : reg8_read(src);
     alu_cp(value);
 }
 
@@ -595,27 +632,4 @@ void CPU::op_DEC_D() {
     if ((d & 0xF) == 0) f |= FLAG_H;
     d = d - 1;
     if (d == 0) f |= FLAG_Z;
-}
-
-// Helper: Return ref to register by GB index
-uint8_t& CPU::reg8(int idx) {
-    switch (idx) {
-        case 0: return b;
-        case 1: return c;
-        case 2: return d;
-        case 3: return e;
-        case 4: return h;
-        case 5: return l;
-        case 6: // (HL) special case handled in opcode code, never assign through this
-            temp_mem = memory.readByte((h << 8) | l);
-            return temp_mem;
-        case 7: return a;
-        default: throw std::out_of_range("Bad reg8 index");
-    }
-}
-
-// -------- Register dump for debug --------
-void CPU::dumpState() const {
-    printf("PC:%04X SP:%04X | AF:%02X%02X BC:%02X%02X DE:%02X%02X HL:%02X%02X\n",
-           pc, sp, a, f, b, c, d, e, h, l);
 }
