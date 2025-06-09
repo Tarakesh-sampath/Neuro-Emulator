@@ -1,8 +1,9 @@
 #include "memory.h"
 #include <fstream>
 #include <iostream>
+#include "joypad.h"
 
-Memory::Memory() : rom(ROM_SIZE, 0xFF), ram(RAM_SIZE, 0x00) {}
+Memory::Memory() : rom(ROM_SIZE, 0xFF), ram(RAM_SIZE, 0x00),joypad(nullptr) {}
 
 bool Memory::loadROM(const std::string& path) {
     std::ifstream file(path, std::ios::binary);
@@ -19,6 +20,11 @@ bool Memory::loadROM(const std::string& path) {
 }
 
 uint8_t Memory::readByte(uint16_t addr) const {
+
+    if (addr == 0xFF00 && joypad) {
+        return joypad->read();
+    }
+    
     if (addr >= ROM_START && addr <= ROM_END) {
         // Cartridge ROM (read-only)
         return rom[addr - ROM_START];
@@ -32,10 +38,19 @@ uint8_t Memory::readByte(uint16_t addr) const {
 }
 
 void Memory::writeByte(uint16_t addr, uint8_t value) {
+    if (addr == 0xFF00 && joypad) {
+        joypad->write(value);
+        return;
+    }
+    
     if (addr >= RAM_START && addr <= RAM_END) {
         ram[addr - RAM_START] = value;
         return;
     }
     // Ignore ROM writes (or log attempt)
     // TODO: Extend for VRAM, I/O, etc.
+}
+
+void Memory::setJoypad(Joypad* jp) {
+    joypad = jp;
 }

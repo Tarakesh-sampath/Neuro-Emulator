@@ -1,6 +1,4 @@
-#ifndef GAMEBOY_CPU_H
-#define GAMEBOY_CPU_H
-
+#pragma once
 #include <cstdint>
 #include "memory.h"
 
@@ -154,7 +152,6 @@ private:
     void op_DEC_DE();
     void op_DEC_E();
     void op_DEC_D();
+    void op_DEC_C();
         
 };
-
-#endif // GAMEBOY_CPU_H
