@@ -65,6 +65,7 @@ void CPU::initOpTable() {
     opTable[0x03] = &CPU::op_INC_BC;
     opTable[0x04] = &CPU::op_INC_B;
     opTable[0x05] = &CPU::op_DEC_B;
+    opTable[0x0D] = &CPU::op_DEC_C;
     opTable[0xCB] = &CPU::op_CB_PREFIX;
     opTable[0xC6] = &CPU::op_ADD_A_d8;
     opTable[0xCE] = &CPU::op_ADC_A_d8;
@@ -632,4 +633,10 @@ void CPU::op_DEC_D() {
     if ((d & 0xF) == 0) f |= FLAG_H;
     d = d - 1;
     if (d == 0) f |= FLAG_Z;
+}
+void CPU::op_DEC_C() {
+    f = (f & FLAG_C) | FLAG_N;  // Preserve C, set N flag (subtract)
+    if ((c & 0xF) == 0) f |= FLAG_H;  // Set H if borrow from bit 4
+    c = c - 1;
+    if (c == 0) f |= FLAG_Z;  // Set Z flag if result zero
 }

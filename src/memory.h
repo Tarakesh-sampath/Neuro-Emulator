@@ -1,9 +1,11 @@
-#ifndef GAMEBOY_MEMORY_H
-#define GAMEBOY_MEMORY_H
-
+#pragma once
 #include <cstdint>
 #include <vector>
 #include <string>
+#include "joypad.h"
+
+// Forward declare Joypad
+class Joypad;
 
 // Memory map constants
 constexpr uint16_t ROM_START = 0x0000;
@@ -24,6 +26,9 @@ public:
     // General read/write
     uint8_t readByte(uint16_t addr) const;
     void writeByte(uint16_t addr, uint8_t value);
+      
+    // Allow Joypad injection after construction
+    void setJoypad(Joypad* joypad);
 
     // For testing/logging, raw pointers (careful with these)
     const uint8_t* getROMPtr() const { return rom.data(); }
@@ -32,6 +37,6 @@ public:
 private:
     std::vector<uint8_t> rom;
     std::vector<uint8_t> ram;
+    
+    Joypad* joypad;
 };
-
-#endif // GAMEBOY_MEMORY_H
