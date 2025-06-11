@@ -3,7 +3,12 @@
 #include <iostream>
 #include <cstdlib>
 
-CPU::CPU() = default;
+CPU::CPU()
+    : regs()
+    , halted(false)
+    , loggingEnabled(false)
+    , instrTable(*this)
+{ }
 
 void CPU::reset() {
     regs = Registers();
@@ -42,26 +47,7 @@ void CPU::step() {
 
     CpuState before = regs.snapshot();
 
-    switch (opcode) {
-        case 0x00: // NOP
-            break;
-
-        case 0x03: // INC BC
-            regs.setBC(regs.getBC() + 1);
-            break;
-
-        case 0x0B: // DEC BC
-            regs.setBC(regs.getBC() - 1);
-            break;
-
-        case 0x09: // ADD HL, BC
-            addHL(regs.getBC());
-            break;
-
-        default:
-            std::cerr << "Unimplemented opcode: 0x" << std::hex << (int)opcode << "\n";
-            exit(1);
-    }
+    instrTable.execute(opcode);
 
     if (loggingEnabled) {
         CpuState after = regs.snapshot();

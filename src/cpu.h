@@ -5,19 +5,19 @@
 #include <cstdint>
 #include <vector>
 #include "reg.h"
-
-using byte = uint8_t;
-using WORD = uint16_t;
+#include "instr_table.h"
 
 class CPU {
 public:
-    CPU();
+    explicit CPU(/*MMU& mmu_placeholder*/);
+    Registers& getRegisters() { return regs; }
 
     void reset();
     void enableLogging(bool enable);
     void step();
 
 private:
+    InstrTable instrTable; 
     Registers regs;
     bool halted = false;
     bool loggingEnabled = false;
