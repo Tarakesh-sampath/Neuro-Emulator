@@ -57,7 +57,7 @@ void InstrTable::execute(byte opcode) {
         case 0x2B: instr_DEC_HL(); break;
         case 0x2C: instr_INC_L(); break;
         case 0x2D: instr_DEC_L(); break;
-        case 0x2E: instr_LD_E_d8(); break;
+        case 0x2E: instr_LD_L_d8(); break;
         case 0x2F: instr_XOR_A(); break;
         case 0x30: instr_JR_NC_r8(); break;
         case 0x31: instr_LD_SP_d16(); break;
@@ -102,7 +102,7 @@ void InstrTable::execute(byte opcode) {
         case 0x58: instr_LD_E_B(); break;
         case 0x59: instr_LD_E_C(); break;
         case 0x5A: instr_LD_E_D(); break;
-        case 0x5B: instr_LD_D_H(); break;
+        case 0x5B: instr_LD_E_E(); break;
         case 0x5C: instr_LD_D_L(); break;
         case 0x5D: instr_LD_D_ptrHL(); break;
         case 0x5E: instr_LD_D_A(); break;

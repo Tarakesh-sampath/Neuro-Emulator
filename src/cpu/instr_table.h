@@ -63,7 +63,7 @@ private:
     void instr_DEC_HL();
     void instr_INC_L();
     void instr_DEC_L();
-    void instr_LD_E_d8();
+    void instr_LD_L_d8();
     void instr_XOR_A();
     void instr_JR_NC_r8();
     void instr_LD_SP_d16();
@@ -108,7 +108,7 @@ private:
     void instr_LD_E_B();
     void instr_LD_E_C();
     void instr_LD_E_D();
-    void instr_LD_D_H();
+    void instr_LD_E_E();
     void instr_LD_D_L();
     void instr_LD_D_ptrHL();
     void instr_LD_D_A();

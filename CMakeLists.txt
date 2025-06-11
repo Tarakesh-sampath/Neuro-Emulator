@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CPU_SOURCES
     src/cpu/cpu.cpp
     src/cpu/instr_table.cpp
+    src/cpu/instr_func.cpp
     src/cpu/reg.cpp
 )
 
