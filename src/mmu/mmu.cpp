@@ -8,7 +8,7 @@ bool MMU::loadROM(const std::vector<byte>& romData) {
 }
 
 byte MMU::readByte(WORD addr) const {
-    if (addr < 0x8000) {
+    if (addr <= 0x7FFF) {
         // ROM or MBC registers accessed via cartridge
         return cartridge.readROM(addr);
     } else if (addr >= 0x8000 && addr <= 0x9FFF) {
@@ -21,8 +21,13 @@ byte MMU::readByte(WORD addr) const {
         // Work RAM
         return wram[addr - 0xC000];
     } else if (addr >= 0xE000 && addr <= 0xFDFF) {
-        // Echo RAM (mirror of Work RAM)
-        return wram[addr - 0xE000];
+        WORD offset = addr - 0xE000;
+        if (offset < 0x1E00) {             // 7.5 KB mirrored range
+            return wram[offset];
+        } else {                          // Beyond mirrored WRAM range
+            std::cerr << "Illegal Echo RAM read at address 0x" << std::hex << addr << "\n";
+            return 0xFF; // Or open bus value
+        }
     } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
         // OAM - sprite attribute table
         return oam[addr - 0xFE00];
@@ -52,8 +57,14 @@ void MMU::writeByte(WORD addr, byte val) {
         // Work RAM
         wram[addr - 0xC000] = val;
     } else if (addr >= 0xE000 && addr <= 0xFDFF) {
-        // Echo RAM mirror
-        wram[addr - 0xE000] = val;
+        WORD offset = addr - 0xE000;
+        if (offset < 0x1E00) {
+            wram[offset] = val;
+        } else {
+            std::cerr << "Illegal Echo RAM write at address 0x" << std::hex << addr
+                    << " with value 0x" << (int)val << "\n";
+            // ignore write or handle as open bus
+        }
     } else if (addr >= 0xFE00 && addr <= 0xFE9F) {
         // OAM
         oam[addr - 0xFE00] = val;

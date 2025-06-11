@@ -18,8 +18,11 @@ void Registers::setSP(WORD val) { SP = val; }
 void Registers::setPC(WORD val) { PC = val; }
 
 void Registers::setFlag(byte flag, bool on) {
-    if (on) F |= flag;
-    else F &= ~flag;
+    if (on) {
+        F = (F | flag) & 0xF0;  // Force lower nibble zero
+    } else {
+        F = (F & ~flag) & 0xF0;
+    }
 }
 
 bool Registers::getFlag(byte flag) const {

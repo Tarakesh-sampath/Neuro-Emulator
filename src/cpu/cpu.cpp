@@ -3,11 +3,12 @@
 #include <iostream>
 #include <cstdlib>
 
-CPU::CPU()
+CPU::CPU(MMU& mmu_)
     : regs()
     , halted(false)
     , loggingEnabled(false)
     , instrTable(*this)
+    , mmu(mmu_)
 { }
 
 void CPU::reset() {
@@ -18,8 +19,27 @@ void CPU::reset() {
 }
 
 byte CPU::readByte(WORD addr) const {
-    // TODO: Integrate with actual Memory Management Unit
-    return 0x00;
+    return mmu.readByte(addr);
+}
+
+void CPU::writeByte(WORD addr, byte val) {
+    mmu.writeByte(addr, val);
+}
+
+Registers& CPU::getRegisters() {
+    return regs;
+}
+
+void CPU::enableLogging(bool enable) {
+    loggingEnabled = enable;
+}
+
+bool CPU::isHalted() const {
+    return halted;
+}
+
+void CPU::logInstruction(byte opcode, const CpuState& before, const CpuState& after) {
+    log.push_back({opcode, before, after});
 }
 
 void CPU::addHL(WORD val) {
@@ -33,13 +53,7 @@ void CPU::addHL(WORD val) {
     regs.setHL(result);
 }
 
-void CPU::logInstruction(byte opcode, const CpuState& before, const CpuState& after) {
-    log.push_back({opcode, before, after});
-}
 
-void CPU::enableLogging(bool enable) {
-    loggingEnabled = enable;
-}
 
 void CPU::step() {
     byte opcode = readByte(regs.getPC());

@@ -6,19 +6,30 @@
 #include <vector>
 #include "reg.h"
 #include "instr_table.h"
-#include "../mmu/mmu.h"
+#include "mmu.h"  
+
+using byte = uint8_t;
+using WORD = uint16_t;
 
 class CPU {
 public:
-    explicit CPU(mmu& mmu);
-    Registers& getRegisters() { return regs; }
+    explicit CPU(MMU& mmu);
+    Registers& getRegisters();
 
     void reset();
     void enableLogging(bool enable);
     void step();
+    void addHL(WORD val);
 
+    // Memory access through MMU
+    byte readByte(WORD addr) const;
+    void writeByte(WORD addr, byte val);
+
+    // halted flag getter
+    bool isHalted() const;
+
+    
 private:
-    InstrTable instrTable; 
     Registers regs;
     bool halted = false;
     bool loggingEnabled = false;
@@ -31,8 +42,9 @@ private:
 
     std::vector<InstructionLog> log;
 
-    byte readByte(WORD addr) const;
-    void addHL(WORD val);
+    MMU& mmu;
+    InstrTable instrTable; 
+
     void logInstruction(byte opcode, const CpuState& before, const CpuState& after);
 };
 

@@ -1,5 +1,6 @@
 //src/instr_table.cpp
 #include "instr_table.h"
+#include "cpu.h" 
 #include <iostream>
 
 InstrTable::InstrTable(CPU& cpu_)
@@ -15,7 +16,7 @@ void InstrTable::execute(byte opcode) {
         case 0x0B: instr_DEC_BC(); break;
         case 0x09: instr_ADD_HL_BC(); break;
         default:
-            std::cerr << "Unimplemented opcode: 0x" << std::hex << (int)opcode << "\n";
+            std::cerr << "Warning: Unimplemented opcode 0x" << std::hex << (int)opcode << ", treating as NOP\n";
             exit(1);
     }
 }

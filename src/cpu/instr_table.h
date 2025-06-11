@@ -1,8 +1,9 @@
 //src/instr_table
 #ifndef INSTR_TABLE_H
 #define INSTR_TABLE_H
+#include "reg.h"
 
-#include "cpu.h"
+class CPU;
 
 class InstrTable {
 public:
