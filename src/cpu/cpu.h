@@ -6,10 +6,11 @@
 #include <vector>
 #include "reg.h"
 #include "instr_table.h"
+#include "../mmu/mmu.h"
 
 class CPU {
 public:
-    explicit CPU(/*MMU& mmu_placeholder*/);
+    explicit CPU(mmu& mmu);
     Registers& getRegisters() { return regs; }
 
     void reset();
