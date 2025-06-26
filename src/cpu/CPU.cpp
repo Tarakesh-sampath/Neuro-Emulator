@@ -22,7 +22,7 @@ void CPU::reset() {
 uint8_t CPU::fetch() {
     uint16_t pc = registers->getPC();
     uint8_t val = memory->readByte(pc);
-    registers.setPC(pc + 1);
+    registers->setPC(pc + 1);
     return val;
 }
 

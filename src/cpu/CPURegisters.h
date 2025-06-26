@@ -19,34 +19,34 @@ public:
     {}
 
     // 8-bit access
-    uint8_t& getA() const { return A; }
+    uint8_t& getA() { return A; }
     void setA(uint8_t val) { A = val; }
 
-    uint8_t& getF() const { return F; }
+    uint8_t& getF() { return F; }
     void setF(uint8_t val) { F = val & FLAG_MASK; }  // Mask flags bits lower nibble
 
-    uint8_t& getB() const { return B; }
+    uint8_t& getB() { return B; }
     void setB(uint8_t val) { B = val; }
 
-    uint8_t& getC() const { return C; }
+    uint8_t& getC() { return C; }
     void setC(uint8_t val) { C = val; }
 
-    uint8_t& getD() const { return D; }
+    uint8_t& getD() { return D; }
     void setD(uint8_t val) { D = val; }
 
-    uint8_t& getE() const { return E; }
+    uint8_t& getE() { return E; }
     void setE(uint8_t val) { E = val; }
 
-    uint8_t& getH() const { return H; }
+    uint8_t& getH() { return H; }
     void setH(uint8_t val) { H = val; }
 
-    uint8_t& getL() const { return L; }
+    uint8_t& getL() { return L; }
     void setL(uint8_t val) { L = val; }
 
-    uint16_t& getSP() const { return SP; }
+    uint16_t& getSP() { return SP; }
     void setSP(uint16_t val) { SP = val; }
 
-    uint16_t& getPC() const { return PC; }
+    uint16_t& getPC() { return PC; }
     void setPC(uint16_t val) { PC = val; }
 
     // 16-bit combined registers accessor
