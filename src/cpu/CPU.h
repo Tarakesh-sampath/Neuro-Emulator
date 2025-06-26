@@ -39,4 +39,4 @@ private:
     bool halted = false;  // HALT state flag
 };
 
-#endif CPU_H
+#endif //CPU_H

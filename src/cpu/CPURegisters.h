@@ -88,4 +88,4 @@ public:
     void setFlagC(bool val) { F = val ? (F | 0x10) : (F & ~0x10); }
 };
 
-#endif CPUREGISTERS_H
+#endif // CPUREGISTERS_H

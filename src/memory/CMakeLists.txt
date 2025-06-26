@@ -1,3 +1,10 @@
-add_library(gb_memory Memory.cpp)
+# Define memory library target
+add_library(memory
+    Memory.cpp
+    Memory.h
+)
 
-target_include_directories(gb_memory PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# Include dirs for memory lib users
+target_include_directories(memory PUBLIC
+    ${PROJECT_SOURCE_DIR}/src/memory
+)
