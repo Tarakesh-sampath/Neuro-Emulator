@@ -4,35 +4,9 @@ project(GameBoyEmulator)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Sources as per finalized project structure
-set(CPU_SOURCES
-    src/cpu/cpu.cpp
-    src/cpu/instr_table.cpp
-    src/cpu/instr_func.cpp
-    src/cpu/reg.cpp
-)
+add_subdirectory(src/cpu)
+add_subdirectory(src/memory)
 
-set(CARTRIDGE_SOURCES
-    src/cartridge/cartridge.cpp
-)
+add_executable(gb_emulator main.cpp)
 
-set(MMU_SOURCES
-    src/mmu/mmu.cpp
-)
-
-set(SRC_SOURCES
-    src/gb.cpp
-)
-
-add_executable(GameBoyEmu
-    ${CPU_SOURCES}
-    ${CARTRIDGE_SOURCES}
-    ${MMU_SOURCES}
-    ${SRC_SOURCES}
-)
-
-target_include_directories(GameBoyEmu PRIVATE
-    src/cpu
-    src/cartridge
-    src/mmu
-)
+target_link_libraries(gb_emulator PRIVATE gb_cpu gb_memory)
