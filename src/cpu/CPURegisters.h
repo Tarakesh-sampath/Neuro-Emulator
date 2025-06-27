@@ -14,6 +14,8 @@ private:
     static constexpr uint8_t FLAG_MASK = 0xF0;
 
 public:
+    // 16-bit register pairs used by instructions
+
     CPURegisters()
         : A(0), F(0), B(0), C(0), D(0), E(0), H(0), L(0), SP(0), PC(0)
     {}
