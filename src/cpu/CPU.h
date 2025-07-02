@@ -24,6 +24,13 @@ enum class Reg8 {
     L
 };
 
+enum class Condition {
+    NZ, // Non-zero (Z flag reset)
+    Z,  // Zero (Z flag set)
+    NC, // No carry (C flag reset)
+    C   // Carry (C flag set)
+};
+
 class CPU {
 public:
     
@@ -50,6 +57,8 @@ private:
     void decodeRun(uint8_t opcode);
 
     bool halted = false;  // HALT state flag
+    bool iem , imePending;
+    int cycle=0;
     
     // 16-bit load
     void LD_rr_d16();        // LD rr,d16
@@ -82,28 +91,24 @@ private:
 
     // JR Jumps
     void JR_Nr_r8();
-    void JR_r_a16();
     void JR_r8();
 
     // JP Jumps
     void JP_Nr_pa16();
-    void JP_r_pa16();
     void JP_HL();
     void JP_a16();
 
     // CALL
     void CALL_Nr_a16();
     void CALL_a16();
-    void CALL_conditional();
 
     // RET
-    void RET_Nr();
-    void RET_r();
+    void RET_Nr(Condition cond);
     void RET();
     void RETI();
 
     // 16-bit Arithmetic
-    void ADD_HL_rr();
+    void ADD_HL_rr(Reg16 reg);
     void ADD_SP_r8();
     void INC_rr();
     void DEC_rr();
