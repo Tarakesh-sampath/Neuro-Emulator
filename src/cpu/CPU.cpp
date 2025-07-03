@@ -57,6 +57,26 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0x02:  // LD (BC), A
             LD_pRR_r(Reg16::BC, Reg8::A);
             break;
+        
+        case 0x03:  // INC BC
+            INC_rr(Reg16::BC);
+            break;
+        
+        case 0x04:  // INC B
+            INC_r(Reg8::B);
+            break;
+            
+        case 0x05:  // DEC B
+            DEC_r(Reg8::B);
+            break;
+        
+        case 0x06:  // LD B,d8
+            LD_r_d8(Reg8::B);
+            break;
+            
+        case 0x07:  // RLCA
+            RLCA();
+            break;
             
         case 0x08:  // LD (a16), SP
             LD_a16_SP();
@@ -70,6 +90,26 @@ void CPU::decodeRun(uint8_t opcode) {
             LD_r_pRR(Reg8::A, Reg16::BC);
             break;
         
+        case 0x0B:  // DEC BC
+            DEC_rr(Reg16::BC);
+            break;
+        
+        case 0x0C:  // INC C
+            INC_r(Reg8::C);
+            break;
+            
+        case 0x0D:  // DEC C
+            DEC_r(Reg8::C);
+            break;
+        
+        case 0x0E:  // LD C,d8
+            LD_r_d8(Reg8::C);
+            break;
+                    
+        case 0x0F:  // RRCA
+            RRCA();
+            break;
+
         case 0x10:  // STOP 0
             STOP();
             break;
@@ -81,7 +121,27 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0x12:  // LD (DE), A
             LD_pRR_r(Reg16::DE, Reg8::A);
             break;
+            
+        case 0x13:  // INC DE
+            INC_rr(Reg16::DE);
+            break;
+
+        case 0x14:  // INC D
+            INC_r(Reg8::D);
+            break;
+
+        case 0x15:  // DEC D
+            DEC_r(Reg8::D);
+            break;
+                
+        case 0x16:  // LD D,d8
+            LD_r_d8(Reg8::D);
+            break;
         
+        case 0x17:  // RLA
+            RLA();
+            break;
+
         case 0x18:  // JR r8 (unconditional relative jump)
             JR_r8();
             break;
@@ -94,6 +154,26 @@ void CPU::decodeRun(uint8_t opcode) {
             LD_r_pRR(Reg8::A, Reg16::DE);
             break;
         
+        case 0x1B:  // DEC DE
+            DEC_rr(Reg16::DE);
+            break;
+    
+        case 0x1C:  // INC E
+            INC_r(Reg8::E);
+            break;
+
+        case 0x1D:  // DEC E
+            DEC_r(Reg8::E);
+            break;
+                    
+        case 0x1E:  // LD E,d8
+            LD_r_d8(Reg8::E);
+            break;
+                    
+        case 0x1F:  // RRA
+            RRA();
+            break;
+            
         case 0x20:  // JR NZ,r8
             JR_Nr_r8(Condition::NZ);
             break;
@@ -101,15 +181,63 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0x21: // LD HL,d16
             LD_rr_d16(Reg16::HL);
             break;
-            
-        case 0x29:  // ADD HL, HL
-            ADD_HL_rr(Reg16::HL);
+        
+        case 0x22:  // LD (HL+), A
+            LD_pHL_inc_A();
             break;
-    
+
+        case 0x23:  // INC HL
+            INC_rr(Reg16::HL);
+            break;
+            
+        case 0x24:  // INC H
+            INC_r(Reg8::H);
+            break;
+                    
+        case 0x25:  // DEC H
+            DEC_r(Reg8::H);
+            break;
+        
+        case 0x26:  // LD H,d8
+            LD_r_d8(Reg8::H);
+            break;
+                
+        case 0x27:  // DAA
+            DAA();
+            break;
+
         case 0x28:  // JR Z,r8
             JR_Nr_r8(Condition::Z);
             break;
+                        
+        case 0x29:  // ADD HL, HL
+            ADD_HL_rr(Reg16::HL);
+            break;
+        
+        case 0x2A:  // LD A,(HL+)
+            LD_A_pHL_inc();
+            break;
             
+        case 0x2B:  // DEC HL
+            DEC_rr(Reg16::HL);
+            break;
+
+        case 0x2C:  // INC L
+            INC_r(Reg8::L);
+            break;
+
+        case 0x2D:  // DEC L
+            DEC_r(Reg8::L);
+            break;
+        
+        case 0x2E:  // LD L,d8
+            LD_r_d8(Reg8::L);
+            break;
+                    
+        case 0x2F:  // CPL
+            CPL();
+            break;
+        
         case 0x30:  // JR NC,r8
             JR_Nr_r8(Condition::NC);
             break;
@@ -117,7 +245,31 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0x31: // LD SP,d16
             LD_rr_d16(Reg16::SP);
             break;
+        
+        case 0x32:  // LD (HL-), A
+            LD_pHL_dec_A();
+            break;
             
+        case 0x33:  // INC SP
+            INC_rr(Reg16::SP);
+            break;
+        
+        case 0x34:  // INC (HL)
+            INC_pHL();
+            break;
+            
+        case 0x35:  // DEC (HL)
+            DEC_pHL();
+            break;        
+        
+        case 0x36:  // LD (HL), d8
+            LD_pHL_d8();
+            break;
+        
+        case 0x37:  // SCF
+            SCF();
+            break;
+
         case 0x38:  // JR C,r8
             JR_Nr_r8(Condition::C);
             break;
@@ -125,7 +277,31 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0x39:  // ADD HL, SP
             ADD_HL_rr(Reg16::SP);
             break;
-    
+            
+        case 0x3A:  // LD A,(HL-)
+            LD_A_pHL_dec();
+            break;
+        
+        case 0x3B:  // DEC SP
+            DEC_rr(Reg16::SP);
+            break;
+        
+        case 0x3C:  // INC A
+            INC_r(Reg8::A);
+            break;
+        
+        case 0x3D:  // DEC A
+            DEC_r(Reg8::A);
+            break;
+        
+        case 0x3E:  // LD A,d8
+            LD_r_d8(Reg8::A);
+            break;
+            
+        case 0x3F:  // CCF
+            CCF();
+            break;
+
         case 0x40: // LD B B 
             LD_r_r(Reg8::B, Reg8::B);
             break;
@@ -148,6 +324,10 @@ void CPU::decodeRun(uint8_t opcode) {
             
         case 0x45: // LD B L
             LD_r_r(Reg8::B, Reg8::L); 
+            break;
+            
+        case 0x46: // LD B,(HL)
+            LD_r_pRR(Reg8::B, Reg16::HL);
             break;
             
         case 0x47: // LD B A
@@ -177,10 +357,14 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0x4D: // LD C L
             LD_r_r(Reg8::C, Reg8::L); 
             break;
+
+        case 0x4E: // LD C,(HL)
+            LD_r_pRR(Reg8::C, Reg16::HL);
+            break;
             
         case 0x4F: // LD C A
             LD_r_r(Reg8::C, Reg8::A); 
-            break;
+            break;  
             
         case 0x50: // LD D B
             LD_r_r(Reg8::D, Reg8::B); 
@@ -206,6 +390,10 @@ void CPU::decodeRun(uint8_t opcode) {
             LD_r_r(Reg8::D, Reg8::L); 
             break;
             
+        case 0x56: // LD D,(HL)
+            LD_r_pRR(Reg8::D, Reg16::HL);
+            break;
+        
         case 0x57: // LD D A
             LD_r_r(Reg8::D, Reg8::A); 
             break;
@@ -232,6 +420,10 @@ void CPU::decodeRun(uint8_t opcode) {
             
         case 0x5D: // LD E L
             LD_r_r(Reg8::E, Reg8::L); 
+            break;
+            
+        case 0x5E: // LD E,(HL)
+            LD_r_pRR(Reg8::E, Reg16::HL);
             break;
             
         case 0x5F: // LD E A
@@ -262,6 +454,10 @@ void CPU::decodeRun(uint8_t opcode) {
             LD_r_r(Reg8::H, Reg8::L); 
             break;
             
+        case 0x66: // LD H,(HL)
+            LD_r_pRR(Reg8::H, Reg16::HL);
+            break;
+            
         case 0x67: // LD H A
             LD_r_r(Reg8::H, Reg8::A); 
             break;
@@ -289,17 +485,45 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0x6D: // LD L L
             LD_r_r(Reg8::L, Reg8::L); 
             break;
+        
+        case 0x6E: // LD L,(HL)
+            LD_r_pRR(Reg8::L, Reg16::HL);
+            break;
             
         case 0x6F: // LD L A
             LD_r_r(Reg8::L, Reg8::A); 
             break;
-                
-        case 0x77:  // LD (HL), A 
-            LD_pRR_r(Reg16::HL, Reg8::A);
+           
+        case 0x70:  // LD (HL), B 
+            LD_pRR_r(Reg16::HL, Reg8::B);
             break;
         
+        case 0x71:  // LD (HL), C
+            LD_pRR_r(Reg16::HL, Reg8::C);
+            break;
+            
+        case 0x72:  // LD (HL), D
+            LD_pRR_r(Reg16::HL, Reg8::D);
+            break;
+        
+        case 0x73:  // LD (HL), E
+            LD_pRR_r(Reg16::HL, Reg8::E);
+            break;
+        
+        case 0x74:  // LD (HL), H 
+            LD_pRR_r(Reg16::HL, Reg8::H);
+            break;
+            
+        case 0x75:  // LD (HL), L
+            LD_pRR_r(Reg16::HL, Reg8::L);
+            break;
+                 
         case 0x76:  // HALT
             HALT();
+            break;
+            
+        case 0x77:  // LD (HL), A 
+            LD_pRR_r(Reg16::HL, Reg8::A);
             break;
             
         case 0x78: // LD A B
@@ -333,7 +557,263 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0x7F: // LD A A
             LD_r_r(Reg8::A, Reg8::A); 
             break;
+        
+        case 0x80: // ADD B
+            ADD_r(Reg8::B);
+            break;
+        
+        case 0x81: // ADD C
+            ADD_r(Reg8::C);
+            break;
             
+        case 0x82: // ADD D
+            ADD_r(Reg8::D);
+            break;
+            
+        case 0x83: // ADD E
+            ADD_r(Reg8::E);
+            break;
+        
+        case 0x84: // ADD H
+            ADD_r(Reg8::H);
+            break;
+            
+        case 0x85: // ADD l
+            ADD_r(Reg8::L);
+            break;
+        
+        case 0x86: // ADD (HL)
+            ADD_pHL();
+            break; 
+            
+        case 0x87: // ADD A
+            ADD_r(Reg8::A);
+            break;
+        
+        case 0x88:  // ADC A,B
+            ADC_r(Reg8::B);
+            break;
+            
+        case 0x89:  // ADC A,C
+            ADC_r(Reg8::C);
+            break;
+            
+        case 0x8A:  // ADC A,D
+            ADC_r(Reg8::D);
+            break;
+            
+        case 0x8B:  // ADC A,E
+            ADC_r(Reg8::E);
+            break;
+            
+        case 0x8C:  // ADC A,H
+            ADC_r(Reg8::H);
+            break;
+            
+        case 0x8D:  // ADC A,L
+            ADC_r(Reg8::L);
+            break;
+        
+        case 0x8E:  // ADC A,(HL)
+            ADC_pHL();
+            break;
+            
+        case 0x8F:  // ADC A,A
+            ADC_r(Reg8::A);
+            break;
+            
+        case 0x90: //SUB B
+            SUB_r(Reg8::B);
+            break;
+        
+        case 0x91: //SUB C
+            SUB_r(Reg8::C);
+            break;
+        
+        case 0x92: //SUB D
+            SUB_r(Reg8::D);
+            break;
+        
+        case 0x93: //SUB E
+            SUB_r(Reg8::E); 
+            break;
+        
+        case 0x94: //SUB H
+            SUB_r(Reg8::H);
+            break;
+        
+        case 0x95: //SUB L
+            SUB_r(Reg8::L);
+            break;
+        
+        case 0x96: // SUB (HL)
+            SUB_pHL();
+            break;  
+            
+        case 0x97: //SUB A
+            SUB_r(Reg8::A);
+            break;
+            
+        case 0x98:  // SBC A,B
+            SBC_r(Reg8::B);
+            break;
+        
+        case 0x99:  // SBC A,C
+            SBC_r(Reg8::C);
+            break;
+        
+        case 0x9A:  // SBC A,D
+            SBC_r(Reg8::D);
+            break;
+        
+        case 0x9B:  // SBC A,E
+            SBC_r(Reg8::E);
+            break;
+        
+        case 0x9C:  // SBC A,H
+            SBC_r(Reg8::H);
+            break;
+        
+        case 0x9D:  // SBC A,L
+            SBC_r(Reg8::L);
+            break;
+        
+        case 0x9E:  // SBC A,(HL)
+            SBC_pHL();
+            break;
+            
+        case 0x9F:  // SBC A,A
+            SBC_r(Reg8::A);
+            break;
+        
+        case 0xA0:  // AND B
+            AND_r(Reg8::B);
+            break;
+            
+        case 0xA1:  // AND C
+            AND_r(Reg8::C);
+            break;
+            
+        case 0xA2:  // AND D
+            AND_r(Reg8::D);
+            break;
+            
+        case 0xA3:  // AND E
+            AND_r(Reg8::E);
+            break;
+            
+        case 0xA4:  // AND H
+            AND_r(Reg8::H);
+            break;
+            
+        case 0xA5:  // AND L
+            AND_r(Reg8::L);
+            break;
+
+        case 0xA6:  // AND (HL)
+            AND_pHL();
+            break;
+            
+        case 0xA7:  // AND A
+            AND_r(Reg8::A);
+            break;
+        
+        case 0xA8:  // XOR B
+            XOR_r(Reg8::B);
+            break;
+            
+        case 0xA9:  // XOR C
+            XOR_r(Reg8::C);
+            break;
+            
+        case 0xAA:  // XOR D
+            XOR_r(Reg8::D);
+            break;
+            
+        case 0xAB:  // XOR E
+            XOR_r(Reg8::E);
+            break;
+            
+        case 0xAC:  // XOR H
+            XOR_r(Reg8::H);
+            break;
+            
+        case 0xAD:  // XOR L
+            XOR_r(Reg8::L);
+            break;
+        
+        case 0xAE:  // XOR (HL)
+            XOR_pHL();
+            break;
+
+        case 0xAF:  // XOR A
+            XOR_r(Reg8::A);
+            break;
+            
+        case 0xB0:  // OR B
+            OR_r(Reg8::B);
+            break;
+
+        case 0xB1:  // OR C
+            OR_r(Reg8::C);
+            break;
+
+        case 0xB2:  // OR D
+            OR_r(Reg8::D);
+            break;
+
+        case 0xB3:  // OR E
+            OR_r(Reg8::E);
+            break;
+
+        case 0xB4:  // OR H
+            OR_r(Reg8::H);
+            break;
+
+        case 0xB5:  // OR L
+            OR_r(Reg8::L);
+            break;
+        
+        case 0xB6:  // OR (HL)
+            OR_pHL();
+            break;
+
+        case 0xB7:  // OR A
+            OR_r(Reg8::A);
+            break;
+        
+        case 0xB8:  // CP B
+            CP_r(Reg8::B);
+            break;
+            
+        case 0xB9:  // CP C
+            CP_r(Reg8::C);
+            break;
+            
+        case 0xBA:  // CP D
+            CP_r(Reg8::D);
+            break;
+        
+        case 0xBB:  // CP E
+            CP_r(Reg8::E);
+            break;
+        
+        case 0xBC:  // CP H
+            CP_r(Reg8::H);
+            break;
+        
+        case 0xBD:  // CP L
+            CP_r(Reg8::L);
+            break;
+            
+        case 0xBE:  // CP (HL)
+            CP_pHL();
+            break;
+        
+        case 0xBF:  // CP A
+            CP_r(Reg8::A);
+            break;
+    
         case 0xC0:  // RET NZ
             RET_Nr(Condition::NZ);
             break;
@@ -358,6 +838,14 @@ void CPU::decodeRun(uint8_t opcode) {
             PUSH_rr(Reg16::BC);
             break;
         
+        case 0xC6:  // ADD A,d8
+            ADD_r8();
+            break;
+            
+        case 0xC7:  // RST 00H
+            RST(0x00);
+            break;
+
         case 0xC8:  // RET Z
             RET_Nr(Condition::Z);
             break;
@@ -381,7 +869,15 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0xCD:  // CALL a16
             CALL_a16();
             break;
-    
+        
+        case 0xCE:  // ADC A, d8
+            ADC_r8();
+            break;
+        
+        case 0xCF:  // RST 08H
+            RST(0x08);
+            break;
+            
         case 0xD0:  // RET NC
             RET_Nr(Condition::NC);
             break;
@@ -401,6 +897,14 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0xD5:  // PUSH DE
             PUSH_rr(Reg16::DE);
             break;
+                
+        case 0xD6:  // SUB d8
+            SUB_r8();
+            break;
+        
+        case 0xD7:  // RST 10H
+            RST(0x10);
+            break;
             
         case 0xD8:  // RET C
             RET_Nr(Condition::C);
@@ -417,7 +921,15 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0xDC:  // CALL C, a16
             CALL_Nr_a16(Condition::C);
             break;
+           
+        case 0xDE:  // SBC A, d8
+            SBC_d8();
+            break;
             
+        case 0xDF:  // RST 18H
+            RST(0x18);
+            break;
+                
         case 0xE0:  // LDH (a8), A
             LDH_pa8_a();
             break;
@@ -433,6 +945,14 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0xE5:  // PUSH HL
             PUSH_rr(Reg16::HL);
             break;
+        
+        case 0xE6:  // AND d8
+            AND_d8();
+            break;
+            
+        case 0xE7:  // RST 12H
+            RST(0x20);
+            break;
             
         case 0xE8:  // ADD SP, r8 
             ADD_SP_r8();
@@ -444,6 +964,10 @@ void CPU::decodeRun(uint8_t opcode) {
             
         case 0xEA:  // LD (a16), A
             LD_pa16_A();
+            break;
+        
+        case 0xEE:  // XOR d8
+            XOR_d8();
             break;
             
         case 0xF0:  // LDH A, (a8)
@@ -465,6 +989,14 @@ void CPU::decodeRun(uint8_t opcode) {
         case 0xF5:  // PUSH AF
             PUSH_rr(Reg16::AF);
             break;
+        
+        case 0xF6:  // OR d8
+            OR_d8();
+            break;
+        
+        case 0xF7:  // RST 12H
+            RST(0x30);
+            break;
             
         case 0xF8:  // LD HL, SP+r8
             LD_HL_SP_r8();
@@ -480,6 +1012,14 @@ void CPU::decodeRun(uint8_t opcode) {
         
         case 0xFB:  // EI
             EI();
+            break;
+        
+        case 0xFE:  // CP d8
+            CP_d8();
+            break;
+        
+        case 0xFF:  // RST 12H
+            RST(0x38);
             break;
           
         default:
@@ -688,6 +1228,27 @@ void CPU::LD_r_r(Reg8 dst, Reg8 src) {
     // Optionally log input registers (dst, src values) and output register for ML training.
 }
 
+void CPU::LD_r_d8(Reg8 r) {
+    uint8_t val = fetch();  // Fetch immediate 8-bit operand
+
+    switch (r) {
+        case Reg8::A: registers->setA(val); break;
+        case Reg8::B: registers->setB(val); break;
+        case Reg8::C: registers->setC(val); break;
+        case Reg8::D: registers->setD(val); break;
+        case Reg8::E: registers->setE(val); break;
+        case Reg8::H: registers->setH(val); break;
+        case Reg8::L: registers->setL(val); break;
+        default: 
+            // Defensive: handle invalid register if needed
+            break;
+    }
+
+    // No flags are affected
+
+    // Optionally log input immediate, target reg write for ML training
+}
+
 void CPU::LDH_pa8_a() {
     uint8_t offset = fetch();  // Fetch 8-bit immediate offset a8
     uint16_t addr = 0xFF00 + offset;
@@ -705,14 +1266,14 @@ void CPU::LDH_pa8_a() {
     // - Output: Memory address and byte written (addr, val)
 }
 
-void CPU::LDH_a_pa8(Reg8 r) {
+void CPU::LDH_a_pa8() {
     uint8_t offset = fetch();              // Fetch immediate 8-bit offset a8
     uint16_t addr = 0xFF00 + offset;      // Compute high RAM address
 
     uint8_t val = memory->readByte(addr); // Read byte from memory
 
     // Write to destination register a
-    registers->setA(val); break;
+    registers->setA(val);
 
     // No flags are affected by this instruction.
 
@@ -779,6 +1340,65 @@ void CPU::LD_A_pa16() {
     // TODO: Log memory read and register write for ML dataset
 
     // Flags unaffected
+}
+
+void CPU::LD_A_pHL_inc() {
+    uint16_t addr = registers->getHL();
+    uint8_t val = memory->readByte(addr);
+    registers->setA(val);
+    registers->setHL(addr + 1);
+
+    // Log read from memory addr, register A write, HL increment for ML dataset here
+}
+
+void CPU::LD_A_pHL_dec() {
+    uint16_t addr = registers->getHL();
+    uint8_t val = memory->readByte(addr);
+    registers->setA(val);
+    registers->setHL(addr - 1);
+
+    // Log read from memory addr, register A write, HL decrement for ML dataset here
+}
+
+void CPU::LD_pHL_inc_A() {
+    uint16_t addr = registers->getHL();
+    uint8_t val = registers->getA();
+
+    memory->writeByte(addr, val);
+    registers->setHL(addr + 1);
+
+    // Log for ML:
+    // - Memory write address and value (addr, val)
+    // - HL before and after increment
+    // - Register A value
+}
+
+void CPU::LD_pHL_dec_A() {
+    uint16_t addr = registers->getHL();
+    uint8_t val = registers->getA();
+
+    memory->writeByte(addr, val);
+    registers->setHL(addr - 1);
+
+    // Log for ML:
+    // - Memory write address and value
+    // - HL before and after decrement
+    // - Register A value
+}
+
+void CPU::LD_pHL_d8() {
+    uint8_t val = fetch();         // Fetch immediate 8-bit value
+    uint16_t addr = registers->getHL();
+
+    memory->writeByte(addr, val);
+
+    // Log for ML:
+    // - PC prefetch address
+    // - Immediate val
+    // - HL pointer (addr)
+    // - Memory write effect
+
+    // Note: This instruction does not affect flags
 }
 
 // Miscellaneous instruction stubs
@@ -1318,85 +1938,944 @@ void CPU::ADD_SP_r8() {
     // TODO: Log input SP, r8, result SP, and flag values for ML dataset
 }
 
-void CPU::INC_rr() {
-    // Stub for INC rr
+void CPU::INC_rr(Reg16 reg) {
+    uint16_t val = 0;
+
+    // Get current 16-bit register pair value
+    switch (reg) {
+        case Reg16::BC:
+            val = registers->getBC();
+            break;
+        case Reg16::DE:
+            val = registers->getDE();
+            break;
+        case Reg16::HL:
+            val = registers->getHL();
+            break;
+        case Reg16::SP:
+            val = registers->getSP();
+            break;
+        default:
+            // Handle illegal register case (optionally log or assert)
+            return;
+    }
+
+    // Increment value by 1
+    val++;
+
+    // Write back incremented value
+    switch (reg) {
+        case Reg16::BC:
+            registers->setBC(val);
+            break;
+        case Reg16::DE:
+            registers->setDE(val);
+            break;
+        case Reg16::HL:
+            registers->setHL(val);
+            break;
+        case Reg16::SP:
+            registers->setSP(val);
+            break;
+    }
+
+    // Note: INC_rr does not affect CPU flags (Z, N, H, C remain unchanged)
+
+    // Typical timing: 8 cycles (2 machine cycles)
+    cycles += 8;
+
+    // TODO: Log original value, incremented value, register affected, and cycle count for ML dataset
 }
 
-void CPU::DEC_rr() {
-    // Stub for DEC rr
+void CPU::DEC_rr(Reg16 reg) {
+    uint16_t val = 0;
+
+    // Read current 16-bit register pair value
+    switch (reg) {
+        case Reg16::BC:
+            val = registers->getBC();
+            break;
+        case Reg16::DE:
+            val = registers->getDE();
+            break;
+        case Reg16::HL:
+            val = registers->getHL();
+            break;
+        case Reg16::SP:
+            val = registers->getSP();
+            break;
+        default:
+            // Optionally handle invalid case with assert or error
+            return;
+    }
+
+    // Decrement value by 1 (wrap-around handled naturally by uint16_t)
+    val--;
+
+    // Write updated value back to register pair
+    switch (reg) {
+        case Reg16::BC:
+            registers->setBC(val);
+            break;
+        case Reg16::DE:
+            registers->setDE(val);
+            break;
+        case Reg16::HL:
+            registers->setHL(val);
+            break;
+        case Reg16::SP:
+            registers->setSP(val);
+            break;
+    }
+
+    // Flags are not affected by DEC rr instruction
+
+    // Typically takes 8 cycles (2 machine cycles)
+    cycles += 8;
+
+    // TODO: Log original value, decremented value, register affected, and cycle count for ML
 }
 
 // 8-bit Arithmetic Instructions: Categories 42-53
 
-void CPU::ADD_r_r() {
-    // Stub for ADD r,r
+void CPU::ADD_r(Reg8 src) {
+    // Only ADD to register A supported per GameBoy spec
+
+    uint8_t aVal = registers->getA();
+    uint8_t srcVal;
+
+    // Read src register value
+    switch (src) {
+        case Reg8::B: srcVal = registers->getB(); break;
+        case Reg8::C: srcVal = registers->getC(); break;
+        case Reg8::D: srcVal = registers->getD(); break;
+        case Reg8::E: srcVal = registers->getE(); break;
+        case Reg8::H: srcVal = registers->getH(); break;
+        case Reg8::L: srcVal = registers->getL(); break;
+        case Reg8::A: srcVal = registers->getA(); break;
+        default:
+            // Handle error or treat as zero
+            srcVal = 0; 
+            break;
+    }
+
+    uint16_t result = aVal + srcVal;
+
+    // Update register A
+    registers->setA(static_cast<uint8_t>(result & 0xFF));
+
+    // Flags update:
+    // Z - Set if result zero
+    // N - Reset (0) because addition
+    // H - Set if carry from bit 3 to bit 4 (half carry)
+    // C - Set if carry (result > 0xFF)
+
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(((aVal & 0xF) + (srcVal & 0xF)) > 0xF);
+    registers->setFlagC(result > 0xFF);
+
+    // Typical timing: 4 cycles (1 machine cycle)
+    cycles += 4;
+
+    // TODO: Log CPU state, input register values, result, flags, and cycles for ML dataset
 }
 
-void CPU::ADD_r_pHL() {
-    // Stub for ADD r,(HL)
+void CPU::ADD_r8() {
+    // Fetch 8-bit immediate value
+    uint8_t val = fetch();
+
+    uint8_t A = registers->getA();
+    uint16_t result = static_cast<uint16_t>(A) + val;
+
+    // Set register A to lower 8 bits of result
+    registers->setA(static_cast<uint8_t>(result & 0xFF));
+
+    // Update flags accordingly:
+    // Z - Set if result is zero
+    // N - Reset (addition operation)
+    // H - Set if carry from bit 3 to bit 4 (half carry)
+    // C - Set if carry from bit 7 (full carry)
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(((A & 0xF) + (val & 0xF)) > 0xF);
+    registers->setFlagC(result > 0xFF);
+
+    // Typical timing: 8 cycles (2 machine cycles)
+
+    cycles += 8;
+
+    // ML Logging Suggestion:
+    // Log inputs: A before, immediate val, flags before
+    // Log outputs: A after, flags after, cycle count
 }
 
-void CPU::SUB_r() {
-    // Stub for SUB r
+void CPU::ADD_pHL() {
+    // Address in HL register
+    uint16_t addr = registers->getHL();
+
+    // Read value from memory at HL
+    uint8_t memVal = memory->readByte(addr);
+
+    uint8_t A = registers->getA();
+    uint16_t result = A + memVal;
+
+    // Store result back into A
+    registers->setA(static_cast<uint8_t>(result & 0xFF));
+
+    // Update flags:
+    // Z - Set if result zero
+    // N - Reset (addition)
+    // H - Set if carry from bit 3 (half carry)
+    // C - Set if carry from bit 7 (overflow above 255)
+
+    bool halfCarry = ((A & 0xF) + (memVal & 0xF)) > 0xF;
+    bool carry = result > 0xFF;
+
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(halfCarry);
+    registers->setFlagC(carry);
+
+    // Typical timing: 8 cycles due to memory access
+    cycles += 8;
+
+    // TODO: Log read from memory, A before and after, flags updated for ML training
+}
+
+void CPU::SUB_r(Reg8 src) {
+    // Read accumulator and source register value
+    uint8_t A = registers->getA();
+    uint8_t val;
+
+    switch (src) {
+        case Reg8::B: val = registers->getB(); break;
+        case Reg8::C: val = registers->getC(); break;
+        case Reg8::D: val = registers->getD(); break;
+        case Reg8::E: val = registers->getE(); break;
+        case Reg8::H: val = registers->getH(); break;
+        case Reg8::L: val = registers->getL(); break;
+        case Reg8::A: val = registers->getA(); break;
+        default:
+            val = 0;  // Or handle error
+            break;
+    }
+
+    uint16_t result = static_cast<uint16_t>(A) - static_cast<uint16_t>(val);
+
+    uint8_t result8 = static_cast<uint8_t>(result & 0xFF);
+
+    // Store result back into accumulator A
+    registers->setA(result8);
+
+    // Flags update per GameBoy CPU spec for SUB:
+    // Z - set if result == 0
+    // N - set (subtraction)
+    // H - set if borrow from bit 4 (i.e., if (A & 0xF) < (val & 0xF))
+    // C - set if borrow (if A < val)
+
+    bool halfBorrow = (A & 0xF) < (val & 0xF);
+    bool borrow = A < val;
+
+    registers->setFlagZ(result8 == 0);
+    registers->setFlagN(true);
+    registers->setFlagH(halfBorrow);
+    registers->setFlagC(borrow);
+
+    // Typical timing for SUB r: 4 cycles
+    cycles += 4;
+
+    // TODO: Log input registers, result, flags, and cycle count for ML dataset
 }
 
 void CPU::SUB_pHL() {
-    // Stub for SUB (HL)
+    // Get memory address from HL register pair
+    uint16_t addr = registers->getHL();
+
+    // Read the value at memory[HL]
+    uint8_t memVal = memory->readByte(addr);
+
+    uint8_t A = registers->getA();
+
+    // Perform subtraction
+    uint16_t result = static_cast<uint16_t>(A) - static_cast<uint16_t>(memVal);
+    uint8_t result8 = static_cast<uint8_t>(result & 0xFF);
+
+    // Store result back into A
+    registers->setA(result8);
+
+    // Update flags according to GameBoy SUB rules:
+    // Z - set if result == 0
+    // N - set (because this is subtraction)
+    // H - set if borrow from bit 4 occurred (half borrow)
+    // C - set if full borrow occurred (if A < memVal)
+
+    bool halfBorrow = (A & 0x0F) < (memVal & 0x0F);
+    bool borrow = A < memVal;
+
+    registers->setFlagZ(result8 == 0);
+    registers->setFlagN(true);
+    registers->setFlagH(halfBorrow);
+    registers->setFlagC(borrow);
+
+    // Typical timing for SUB (HL) is 8 cycles (memory read penalty)
+    cycles += 8;
+
+    // TODO: Log:
+    // - Input: A before subtraction, memory value at HL, flags before
+    // - Output: A after subtraction, flags updated, cycles
+    // for ML training dataset
 }
 
-void CPU::ADC_r() {
-    // Stub for ADC r
+void CPU::SUB_r8() {
+    uint8_t value = fetch();  // Fetch immediate 8-bit operand
+
+    uint8_t A = registers->getA();
+    uint16_t result = static_cast<uint16_t>(A) - static_cast<uint16_t>(value);
+    uint8_t result8 = static_cast<uint8_t>(result & 0xFF);
+
+    // Store result back into accumulator A
+    registers->setA(result8);
+
+    // Flags update per GameBoy SUB rules:
+    // Z - set if result == 0
+    // N - set (because this is subtraction)
+    // H - set if borrow from bit 4 occurred (half borrow)
+    // C - set if full borrow occurred (if A < value)
+
+    bool halfBorrow = (A & 0xF) < (value & 0xF);
+    bool borrow = A < value;
+
+    registers->setFlagZ(result8 == 0);
+    registers->setFlagN(true);
+    registers->setFlagH(halfBorrow);
+    registers->setFlagC(borrow);
+
+    // Typical timing for SUB d8: 8 cycles
+    cycles += 8;
+
+    // TODO: Log input register A, immediate value, result, flags, and cycle count for ML dataset
+}
+
+void CPU::ADC_r(Reg8 r) {
+    // Read source register value
+    uint8_t value = 0;
+    switch (r) {
+        case Reg8::A: value = registers->getA(); break;
+        case Reg8::B: value = registers->getB(); break;
+        case Reg8::C: value = registers->getC(); break;
+        case Reg8::D: value = registers->getD(); break;
+        case Reg8::E: value = registers->getE(); break;
+        case Reg8::H: value = registers->getH(); break;
+        case Reg8::L: value = registers->getL(); break;
+        default: value = 0; break; // Defensive fallback
+    }
+
+    uint8_t A = registers->getA();
+    uint8_t carry = registers->getFlagC() ? 1 : 0;
+
+    // Perform ADC operation: A + value + carry
+    uint16_t result = A + value + carry;
+
+    // Set flags according to GameBoy CPU rules
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(((A & 0xF) + (value & 0xF) + carry) > 0xF);
+    registers->setFlagC(result > 0xFF);
+
+    // Write result back to A register
+    registers->setA(static_cast<uint8_t>(result & 0xFF));
+
+    // Optional ML logging:
+    // Inputs: A before, source value, carry flag
+    // Outputs: result A, updated flags (Z,N,H,C)
 }
 
 void CPU::ADC_pHL() {
-    // Stub for ADC (HL)
+    uint16_t addr = registers->getHL();
+    uint8_t value = memory->readByte(addr);
+    uint8_t A = registers->getA();
+    uint8_t carry = registers->getFlagC() ? 1 : 0;
+
+    // Perform ADC operation: A + value + carry
+    uint16_t result = A + value + carry;
+
+    // Set flags according to GameBoy CPU ADC rules
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(((A & 0xF) + (value & 0xF) + carry) > 0xF);
+    registers->setFlagC(result > 0xFF);
+
+    // Write result back to A register
+    registers->setA(static_cast<uint8_t>(result & 0xFF));
+
+    // ML logging hooks here: inputs: A, value from mem, carry flag; outputs: A result, flags
 }
 
-void CPU::SBC_r() {
-    // Stub for SBC r
+void CPU::SBC_r(Reg8 r) {
+    // Get value of source register
+    uint8_t value = 0;
+    switch (r) {
+        case Reg8::A: value = registers->getA(); break;
+        case Reg8::B: value = registers->getB(); break;
+        case Reg8::C: value = registers->getC(); break;
+        case Reg8::D: value = registers->getD(); break;
+        case Reg8::E: value = registers->getE(); break;
+        case Reg8::H: value = registers->getH(); break;
+        case Reg8::L: value = registers->getL(); break;
+        default: value = 0; break; // defensive fallback
+    }
+
+    uint8_t A = registers->getA();
+    uint8_t carry = registers->getFlagC() ? 1 : 0;
+
+    // Perform SBC operation: A - value - carry
+    int16_t result = static_cast<int16_t>(A) - static_cast<int16_t>(value) - carry;
+
+    // Set flags according to GameBoy CPU SBC rules
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(true);
+    // Half Carry flag is set if borrow from bit 4
+    registers->setFlagH(((A & 0xF) - (value & 0xF) - carry) < 0);
+    // Carry if borrow occurs (result < 0)
+    registers->setFlagC(result < 0);
+
+    // Write result back to A register (low 8 bits)
+    registers->setA(static_cast<uint8_t>(result & 0xFF));
+
+    // Optionally log:
+    // Inputs: A before, src value, carry flag before
+    // Outputs: result A, updated flags (Z, N, H, C)
 }
 
 void CPU::SBC_pHL() {
-    // Stub for SBC (HL)
+    uint16_t addr = registers->getHL();
+    uint8_t value = memory->readByte(addr);
+    uint8_t A = registers->getA();
+    uint8_t carry = registers->getFlagC() ? 1 : 0;
+
+    // Perform SBC operation: A - value - carry
+    int16_t result = static_cast<int16_t>(A) - static_cast<int16_t>(value) - carry;
+
+    // Set flags according to GameBoy CPU SBC rules
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(true);
+    // Half Carry is set if borrow from bit 4
+    registers->setFlagH(((A & 0xF) - (value & 0xF) - carry) < 0);
+    // Carry if borrow occurs (result < 0)
+    registers->setFlagC(result < 0);
+
+    // Write result (low 8 bits) back to A register
+    registers->setA(static_cast<uint8_t>(result & 0xFF));
+
+    // ML logging hooks:
+    // Inputs: A, memory value at HL, carry flag before operation
+    // Outputs: new A, flags Z, N, H, C
 }
 
-void CPU::INC_r() {
-    // Stub for INC r
+void CPU::SBC_d8() {
+    uint8_t value = fetch();  // Fetch the immediate 8-bit operand
+
+    uint8_t A = registers->getA();
+    uint8_t carry = registers->getFlagC() ? 1 : 0;
+
+    // Perform SBC operation: A - value - carry
+    int16_t result = static_cast<int16_t>(A) - static_cast<int16_t>(value) - carry;
+    uint8_t result8 = static_cast<uint8_t>(result & 0xFF);
+
+    // Write result back into accumulator
+    registers->setA(result8);
+
+    // Set flags according to GameBoy CPU SBC rules:
+    registers->setFlagZ(result8 == 0);   // Zero flag if result is zero
+    registers->setFlagN(true);            // Subtract flag set
+    // Half-carry flag set if borrow from bit 4 occurs
+    registers->setFlagH(((A & 0xF) - (value & 0xF) - carry) < 0);
+    // Carry flag set if borrow (result < 0)
+    registers->setFlagC(result < 0);
+
+    // Update cycles for immediate SBC, typically 8 cycles
+    cycles += 8;
+
+    // Optional ML logging:
+    // Inputs: A before, immediate value, carry flag before
+    // Outputs: result A, flags Z, N, H, C
+}
+
+void CPU::INC_r(Reg8 r) {
+    // Fetch the value of the register to increment
+    uint8_t val = 0;
+    switch (r) {
+        case Reg8::A: val = registers->getA(); break;
+        case Reg8::B: val = registers->getB(); break;
+        case Reg8::C: val = registers->getC(); break;
+        case Reg8::D: val = registers->getD(); break;
+        case Reg8::E: val = registers->getE(); break;
+        case Reg8::H: val = registers->getH(); break;
+        case Reg8::L: val = registers->getL(); break;
+        default: val = 0; break; // Defensive fallback
+    }
+
+    uint8_t result = val + 1;
+
+    // Update flags as per GameBoy CPU spec for INC r:
+    // Z - Set if result == 0
+    // N - Reset
+    // H - Set if carry from bit 3
+    // C - Not affected
+
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    // Half carry if (val & 0xF) + 1 > 0xF
+    registers->setFlagH(((val & 0xF) + 1) > 0xF);
+    // Carry flag unaffected, so no set here
+
+    // Write back to the register
+    switch (r) {
+        case Reg8::A: registers->setA(result); break;
+        case Reg8::B: registers->setB(result); break;
+        case Reg8::C: registers->setC(result); break;
+        case Reg8::D: registers->setD(result); break;
+        case Reg8::E: registers->setE(result); break;
+        case Reg8::H: registers->setH(result); break;
+        case Reg8::L: registers->setL(result); break;
+        default: break; // Defensive fallback
+    }
+
+    // Optional ML logging hook:
+    // Log input val, result, updated flags Z,N,H,C, and affected register
+}
+
+void CPU::INC_pHL() {
+    uint16_t addr = registers->getHL();
+    uint8_t val = memory->readByte(addr);
+    uint8_t result = val + 1;
+
+    // Set flags according to GameBoy CPU INC (HL) instruction:
+    // Z - Set if result == 0
+    // N - Reset (false)
+    // H - Set if carry from bit 3 to bit 4
+    // C - Not affected
+
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(((val & 0xF) + 1) > 0xF);
+    // Carry flag unchanged, so no set/reset here
+
+    // Write result back to memory at address HL
+    memory->writeByte(addr, result);
+
+    // ML Logging possibility:
+    // Inputs: original value at (HL)
+    // Outputs: new value at (HL), affected flags Z, N, H
+}
+
+void CPU::DEC_r(Reg8 r) {
+    uint8_t val = 0;
+    // Fetch value of the register specified by enum
+    switch (r) {
+        case Reg8::A: val = registers->getA(); break;
+        case Reg8::B: val = registers->getB(); break;
+        case Reg8::C: val = registers->getC(); break;
+        case Reg8::D: val = registers->getD(); break;
+        case Reg8::E: val = registers->getE(); break;
+        case Reg8::H: val = registers->getH(); break;
+        case Reg8::L: val = registers->getL(); break;
+        default: val = 0; break;  // Defensive fallback
+    }
+
+    uint8_t result = val - 1;
+
+    // Set flags according to GameBoy CPU DEC r specification:
+    // Z - Set if result == 0
+    // N - Set (because DEC is subtract)
+    // H - Set if borrow from bit 4 (i.e., if (val & 0xF) == 0)
+    // C - Not affected
+
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(true);
+    registers->setFlagH((val & 0xF) == 0);
+    // Carry flag unchanged
+
+    // Write back the decremented value to the appropriate register
+    switch (r) {
+        case Reg8::A: registers->setA(result); break;
+        case Reg8::B: registers->setB(result); break;
+        case Reg8::C: registers->setC(result); break;
+        case Reg8::D: registers->setD(result); break;
+        case Reg8::E: registers->setE(result); break;
+        case Reg8::H: registers->setH(result); break;
+        case Reg8::L: registers->setL(result); break;
+        default: break;
+    }
+
+    // ML logging suggestions:
+    // - Input: original register value, output: decremented value, flags Z, N, H, C
+}
+
+void CPU::DEC_pHL() {
+    uint16_t addr = registers->getHL();
+    uint8_t val = memory->readByte(addr);
+    uint8_t result = val - 1;
+
+    // Flags update according to GameBoy CPU DEC (HL) instruction:
+    // Z - Set if result == 0
+    // N - Set (because DEC is subtraction)
+    // H - Set if borrow from bit 4 (half borrow)
+    // C - Not affected
+
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(true);
+    // Half borrow occurs if low nibble of val is zero before decrement
+    registers->setFlagH((val & 0xF) == 0);
+    // Carry flag remains unchanged
+
+    memory->writeByte(addr, result);
+
+    // ML logging hooks:
+    // Inputs: original value at (HL)
+    // Outputs: decremented value at (HL), flags Z, N, H, C
+}
+
+void CPU::ADC_r8() {
+    uint8_t value = fetch();  // Fetch immediate 8-bit operand
+
+    uint8_t A = registers->getA();
+    uint8_t carry = registers->getFlagC() ? 1 : 0;
+
+    // Perform ADC operation: A + value + carry
+    uint16_t result = A + value + carry;
+
+    // Set flags according to GameBoy CPU rules
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(((A & 0xF) + (value & 0xF) + carry) > 0xF);
+    registers->setFlagC(result > 0xFF);
+
+    // Write result back to A register
+    registers->setA(static_cast<uint8_t>(result & 0xFF));
+
+    // Optional ML logging:
+    // Inputs: A before, immediate value, carry flag
+    // Outputs: result A, updated flags (Z,N,H,C)
 }
 
 // Logical Instructions: Categories 54-61
 
-void CPU::AND_r() {
-    // Stub for AND r
+void CPU::AND_r(Reg8 r) {
+    uint8_t val = 0;
+    switch (r) {
+        case Reg8::A: val = registers->getA(); break;
+        case Reg8::B: val = registers->getB(); break;
+        case Reg8::C: val = registers->getC(); break;
+        case Reg8::D: val = registers->getD(); break;
+        case Reg8::E: val = registers->getE(); break;
+        case Reg8::H: val = registers->getH(); break;
+        case Reg8::L: val = registers->getL(); break;
+        default: val = 0; break; // Defensive fallback
+    }
+
+    uint8_t A = registers->getA();
+    uint8_t result = A & val;
+
+    registers->setA(result);
+
+    // Flags update according to GameBoy CPU AND rules:
+    // Z - Set if result is zero
+    // N - Reset (false)
+    // H - Set (true)
+    // C - Reset (false)
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(true);
+    registers->setFlagC(false);
+
+    // Optional ML logging:
+    // Inputs: A before, val sourced
+    // Output: result in A and updated flags
 }
 
 void CPU::AND_pHL() {
-    // Stub for AND (HL)
+    uint16_t addr = registers->getHL();
+    uint8_t value = memory->readByte(addr);
+    uint8_t A = registers->getA();
+
+    uint8_t result = A & value;
+    registers->setA(result);
+
+    // Flags update according to GameBoy CPU AND rules:
+    // Z - Set if result == 0
+    // N - Reset
+    // H - Set
+    // C - Reset
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(true);
+    registers->setFlagC(false);
+
+    // ML logging can record:
+    // - Inputs: A before, value at (HL)
+    // - Outputs: A result, flags Z,N,H,C
 }
 
-void CPU::OR_r() {
-    // Stub for OR r
+void CPU::AND_d8() {
+    uint8_t value = fetch();  // Fetch immediate 8-bit operand
+    
+    uint8_t A = registers->getA();
+    uint8_t result = A & value;
+
+    registers->setA(result);
+
+    // Flags update according to GameBoy CPU AND rules:
+    // Z - Set if result == 0
+    // N - Reset
+    // H - Set
+    // C - Reset
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(true);
+    registers->setFlagC(false);
+
+    // Optional ML logging:
+    // Inputs: A before, immediate value
+    // Outputs: A after operation, flags Z, N, H, C
+}
+
+void CPU::OR_r(Reg8 r) {
+    uint8_t val = 0;
+    switch (r) {
+        case Reg8::A: val = registers->getA(); break;
+        case Reg8::B: val = registers->getB(); break;
+        case Reg8::C: val = registers->getC(); break;
+        case Reg8::D: val = registers->getD(); break;
+        case Reg8::E: val = registers->getE(); break;
+        case Reg8::H: val = registers->getH(); break;
+        case Reg8::L: val = registers->getL(); break;
+        default: val = 0; break;
+    }
+
+    uint8_t A = registers->getA();
+    uint8_t result = A | val;
+    registers->setA(result);
+
+    // Update flags according to GameBoy CPU OR instruction:
+    // Z - Set if result == 0
+    // N - Reset
+    // H - Reset
+    // C - Reset
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+    registers->setFlagC(false);
+
+    // ML logging:
+    // Inputs: A before, val
+    // Outputs: A result, flags Z,N,H,C
 }
 
 void CPU::OR_pHL() {
-    // Stub for OR (HL)
+    uint16_t addr = registers->getHL();
+    uint8_t value = memory->readByte(addr);
+    uint8_t A = registers->getA();
+
+    uint8_t result = A | value;
+    registers->setA(result);
+
+    // Flag updates per GameBoy OR spec:
+    // Z - Set if result == 0
+    // N - Reset
+    // H - Reset
+    // C - Reset
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+    registers->setFlagC(false);
+
+    // ML logging points:
+    // inputs: A before, memory value at HL
+    // outputs: result A, flags Z, N, H, C
 }
 
-void CPU::XOR_r() {
-    // Stub for XOR r
+void CPU::OR_d8() {
+    uint8_t value = fetch();  // Fetch immediate 8-bit operand
+
+    uint8_t A = registers->getA();
+    uint8_t result = A | value;
+
+    registers->setA(result);
+
+    // Update flags according to GameBoy CPU OR instruction:
+    // Z - Set if result == 0
+    // N - Reset
+    // H - Reset
+    // C - Reset
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+    registers->setFlagC(false);
+
+    // Optional ML logging:
+    // Inputs: A before, immediate value
+    // Outputs: A result, flags Z, N, H, C
+}
+
+void CPU::XOR_r(Reg8 r) {
+    uint8_t val = 0;
+    switch (r) {
+        case Reg8::A: val = registers->getA(); break;
+        case Reg8::B: val = registers->getB(); break;
+        case Reg8::C: val = registers->getC(); break;
+        case Reg8::D: val = registers->getD(); break;
+        case Reg8::E: val = registers->getE(); break;
+        case Reg8::H: val = registers->getH(); break;
+        case Reg8::L: val = registers->getL(); break;
+        default: val = 0; break; // Defensive fallback
+    }
+
+    uint8_t A = registers->getA();
+    uint8_t result = A ^ val;
+    registers->setA(result);
+
+    // Flags update according to GameBoy CPU XOR spec:
+    // Z - Set if result == 0
+    // N - Reset
+    // H - Reset
+    // C - Reset
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+    registers->setFlagC(false);
+
+    // ML logging:
+    // Inputs: A before, val
+    // Outputs: A result, flags Z,N,H,C
 }
 
 void CPU::XOR_pHL() {
-    // Stub for XOR (HL)
+    uint16_t addr = registers->getHL();
+    uint8_t value = memory->readByte(addr);
+    uint8_t A = registers->getA();
+
+    uint8_t result = A ^ value;
+    registers->setA(result);
+
+    // Flags update according to GameBoy CPU XOR instruction spec:
+    // Z - Set if result == 0
+    // N - Reset
+    // H - Reset
+    // C - Reset
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+    registers->setFlagC(false);
+
+    // ML logging:
+    // Inputs: A before, memory value at HL
+    // Outputs: A result and flags Z, N, H, C
 }
 
-void CPU::CP_r() {
-    // Stub for CP r
+void CPU::XOR_d8() {
+    uint8_t value = fetch();  // Fetch immediate 8-bit operand
+
+    uint8_t A = registers->getA();
+    uint8_t result = A ^ value;
+
+    registers->setA(result);
+
+    // Flags update according to GameBoy CPU XOR spec:
+    // Z - Set if result == 0
+    // N - Reset (false)
+    // H - Reset (false)
+    // C - Reset (false)
+    registers->setFlagZ(result == 0);
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+    registers->setFlagC(false);
+
+    // Optional ML logging:
+    // Inputs: A before, immediate value
+    // Outputs: A result, flags Z, N, H, C
+}
+
+void CPU::CP_r(Reg8 r) {
+    uint8_t value = 0;
+    switch (r) {
+        case Reg8::A: value = registers->getA(); break;
+        case Reg8::B: value = registers->getB(); break;
+        case Reg8::C: value = registers->getC(); break;
+        case Reg8::D: value = registers->getD(); break;
+        case Reg8::E: value = registers->getE(); break;
+        case Reg8::H: value = registers->getH(); break;
+        case Reg8::L: value = registers->getL(); break;
+        default: value = 0; break; // Defensive fallback
+    }
+
+    uint8_t A = registers->getA();
+    int16_t result = static_cast<int16_t>(A) - static_cast<int16_t>(value);
+
+    // Set flags according to GameBoy CP instruction:
+    // Z - Set if result == 0
+    // N - Set (subtract flag)
+    // H - Set if borrow from bit 4 (half carry)
+    // C - Set if borrow (if A < value)
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(true);
+    registers->setFlagH(((A & 0xF) < (value & 0xF)));
+    registers->setFlagC(A < value);
+
+    // Note: A register is not modified by CP, only flags update.
+
+    // Optional ML logging:
+    // Inputs: A before, r value
+    // Outputs: flags Z,N,H,C changes
 }
 
 void CPU::CP_pHL() {
-    // Stub for CP (HL)
+    uint16_t addr = registers->getHL();
+    uint8_t value = memory->readByte(addr);
+    uint8_t A = registers->getA();
+    int16_t result = static_cast<int16_t>(A) - static_cast<int16_t>(value);
+
+    // Set flags according to GameBoy CP instruction (memory operand):
+    // Z - Set if result == 0
+    // N - Set
+    // H - Half borrow from bit 4
+    // C - Borrow
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(true);
+    registers->setFlagH(((A & 0xF) < (value & 0xF)));
+    registers->setFlagC(A < value);
+
+    // A register unchanged
+
+    // Optional ML logging:
+    // Inputs: A before, memory[HL]
+    // Outputs: flags Z,N,H,C updates
 }
+
+void CPU::CP_d8() {
+    uint8_t value = fetch();  // Fetch immediate 8-bit operand
+
+    uint8_t A = registers->getA();
+    int16_t result = static_cast<int16_t>(A) - static_cast<int16_t>(value);
+
+    // Update flags according to GameBoy CP instruction semantics:
+    // - Z: set if (A - value) == 0
+    // - N: set (subtract flag)
+    // - H: set if borrow from bit 4 occurred (half carry)
+    // - C: set if borrow occurred (if A < value)
+    registers->setFlagZ((result & 0xFF) == 0);
+    registers->setFlagN(true);
+    registers->setFlagH(((A & 0xF) < (value & 0xF)));
+    registers->setFlagC(A < value);
+
+    // Note: A register is not modified by CP, only flags are updated.
+
+    // Optional ML logging:
+    // Inputs: A before, immediate value
+    // Outputs: flags Z, N, H, C updates
+}
+
 
 // Rotate/Shift (CB prefix) Instructions: Categories 62-69
 
@@ -1447,31 +2926,230 @@ void CPU::SET_n_r() {
 // Miscellaneous Operations: Categories 70-73
 
 void CPU::DAA() {
-    // Stub for DAA
+    uint8_t A = registers->getA();
+    bool N = registers->getFlagN();  // Subtraction flag
+    bool H = registers->getFlagH();  // Half carry flag
+    bool C = registers->getFlagC();  // Carry flag
+
+    uint8_t correction = 0;
+    bool setC = false;
+
+    if (!N) { // After an addition
+        if (C || A > 0x99) {
+            correction |= 0x60;
+            setC = true;
+        }
+        if (H || (A & 0x0F) > 0x09) {
+            correction |= 0x06;
+        }
+        A += correction;
+    } else { // After a subtraction
+        if (C) {
+            correction |= 0x60;
+            setC = true;
+        }
+        if (H) {
+            correction |= 0x06;
+        }
+        A -= correction;
+    }
+
+    registers->setA(A);
+
+    // Flags update:
+    // Z - set if A is zero after adjustment
+    registers->setFlagZ(A == 0);
+    // N - remains unchanged
+    // H - reset after DAA
+    registers->setFlagH(false);
+    // C - updated if correction induced carry or was previously set
+    registers->setFlagC(setC);
+
+    // ML logging:
+    // Inputs: original A, flags N,H,C before DAA
+    // Outputs: A after correction, flags Z, N, H, C after correction
 }
 
 void CPU::CPL() {
-    // Stub for CPL
+    uint8_t A = registers->getA();
+
+    // CPL flips (inverts) all bits in A register (one's complement)
+    uint8_t result = ~A;
+    registers->setA(result);
+
+    // Update flags according to GameBoy CPU CPL instruction:
+    // N - Set (1)
+    // H - Set (1)
+    // Z - Not affected
+    // C - Not affected
+    registers->setFlagN(true);
+    registers->setFlagH(true);
+    // Z and C remain unchanged
+
+    // ML logging (optional):
+    // Inputs: A before
+    // Outputs: A after inversion, flags N and H set
 }
 
 void CPU::CCF() {
-    // Stub for CCF
+    // CCF: Complement (invert) carry flag
+    
+    bool currentCarry = registers->getFlagC();
+    registers->setFlagC(!currentCarry);  // Toggle carry flag
+    
+    registers->setFlagN(false);  // Reset N flag
+    registers->setFlagH(false);  // Reset H flag
+    // Z flag unaffected
+    
+    // Optionally add cycles counting if your cycle variable is managed here
+    cycles += 4;  // Typical machine cycles count
+    
+    // ML logging:
+    // Inputs: flags before (N, H, C)
+    // Outputs: flags after (N=0, H=0, C toggled), Z unchanged
 }
 
 void CPU::SCF() {
-    // Stub for SCF
+    // SCF: Set Carry Flag
+    
+    // Set carry flag
+    registers->setFlagC(true);
+
+    // Reset N and H flags
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+
+    // Z flag remains unchanged
+
+    // TODO: Log input flags, output flags for ML dataset if desired
+
+    // Timing: add cycles
+    //cycles += 4;  // or as per your cycle accounting scheme
 }
 
-void CPU::INC_pHL() {
-    // Stub for INC (HL)
+void CPU::RLCA() {
+    uint8_t A = registers->getA();
+
+    // Extract bit 7 to set carry
+    bool bit7 = (A & 0x80) != 0;
+
+    // Rotate A left circular: bit7 moves to bit 0
+    uint8_t result = (A << 1) | (bit7 ? 1 : 0);
+    registers->setA(result);
+
+    // Update flags according to GameBoy RLCA spec:
+    // Z - Reset (0) — RLCA does NOT affect zero flag
+    // N - Reset
+    // H - Reset
+    // C - Set if old bit 7 was 1
+    registers->setFlagZ(false);
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+    registers->setFlagC(bit7);
+
+    // ML logging:
+    // Inputs: A before
+    // Outputs: A after, flags N, H, C (Z ignored/reset)
 }
 
-void CPU::DEC_r() {
-    // Stub for DEC r
+void CPU::RLA() {
+    uint8_t A = registers->getA();
+    bool oldCarry = registers->getFlagC();
+
+    // Shift A left by 1, insert old carry in bit 0
+    bool bit7 = (A & 0x80) != 0;
+    uint8_t result = (A << 1) | (oldCarry ? 1 : 0);
+
+    registers->setA(result);
+
+    // Set flags per GameBoy spec:
+    // Z - Reset (not affected)
+    // N - Reset
+    // H - Reset
+    // C - Set if old bit7 was set
+    registers->setFlagZ(false);
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+    registers->setFlagC(bit7);
+
+    // ML logging hooks:
+    // Inputs: A before, carry before
+    // Outputs: A after, flags N,H,C (Z reset)
 }
 
-void CPU::DEC_pHL() {
-    // Stub for DEC (HL)
+void CPU::RRCA() {
+    uint8_t A = registers->getA();
+
+    // Extract bit 0 to set carry
+    bool bit0 = (A & 0x01) != 0;
+
+    // Rotate A right circular: bit0 moves to bit 7
+    uint8_t result = (A >> 1) | (bit0 ? 0x80 : 0);
+    registers->setA(result);
+
+    // RLCA flag update rules:
+    // Z - Reset (0), not affected
+    // N - Reset
+    // H - Reset
+    // C - Set if old bit 0 was 1
+    registers->setFlagZ(false);
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+    registers->setFlagC(bit0);
+
+    // ML Logging:
+    // Inputs: A before rotation
+    // Outputs: A after, flags N, H, C (Z reset)
+}
+
+void CPU::RRA() {
+    uint8_t A = registers->getA();
+    bool oldCarry = registers->getFlagC();
+
+    // Extract bit 0 before shift to set carry
+    bool bit0 = (A & 0x01) != 0;
+
+    // Rotate A right through carry: old carry moves into bit 7
+    uint8_t result = (A >> 1) | (oldCarry ? 0x80 : 0);
+    registers->setA(result);
+
+    // Flags per GameBoy spec:
+    // Z - Reset (not affected)
+    // N - Reset
+    // H - Reset
+    // C - Updated to old bit 0
+    registers->setFlagZ(false);
+    registers->setFlagN(false);
+    registers->setFlagH(false);
+    registers->setFlagC(bit0);
+
+    // ML Logging:
+    // Inputs: A before, carry flag before
+    // Outputs: A after, flags N, H, C (Z reset)
+}
+
+void CPU::RST(uint8_t address) {
+    // Push current PC onto the stack
+    uint16_t pc = registers->getPC();
+    uint16_t sp = registers->getSP();
+
+    sp -= 2;
+    memory->writeByte(sp, pc);
+    registers->setSP(sp);
+
+    // Jump to fixed address
+    registers->setPC(address);
+
+    // RST takes 16 cycles (4 machine cycles)
+    cycles += 16;
+
+    // ML Logging:
+    // Input: PC before, SP before
+    // Output: PC after, SP aft16;
+
+    // ML Logging:
+    // Input: PC before, SP before
+    // Output: PC after, SP after, memory write at SP
 }
 
 //Prefix CB
@@ -1483,10 +3161,10 @@ void CPU::PrefixCB() {
     // Example switch for CB-prefixed instructions (expand as needed)
     switch (cbOpcode) {
         case 0x00: // RLC B
-            RLC_r(Reg8::B);
+            //RLC_r(Reg8::B);
             break;
         case 0x01: // RLC C
-            RLC_r(Reg8::C);
+            //RLC_r(Reg8::C);
             break;
         // ... add all other CB-prefixed instructions with proper Reg8/bit parameters
 

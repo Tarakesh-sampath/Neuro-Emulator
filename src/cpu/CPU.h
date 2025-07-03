@@ -5,15 +5,16 @@
 #include "CPURegisters.h"
 #include "memory/Memory.h"
 
-
+// 16-bit Register pairs
 enum class Reg16 {
     BC,
     DE,
     HL,
-    SP
+    SP,
+    AF   // Added AF for stack operations PUSH/POP
 };
 
-// 8-bit registers
+// 8-bit Registers
 enum class Reg8 {
     A,
     B,
@@ -24,58 +25,61 @@ enum class Reg8 {
     L
 };
 
+// Conditional flags for conditional jumps and calls
 enum class Condition {
-    NZ, // Non-zero (Z flag reset)
-    Z,  // Zero (Z flag set)
-    NC, // No carry (C flag reset)
-    C   // Carry (C flag set)
+    NZ, // Non-zero (Z reset)
+    Z,  // Zero (Z set)
+    NC, // No carry (C reset)
+    C   // Carry (C set)
 };
 
 class CPU {
 public:
-    
     CPU(Memory* mem, CPURegisters* regs);
 
-
-    // Perform one CPU instruction step (fetch, decode, execute)
+    // Run one instruction step (fetch, decode, execute)
     void step();
 
-    // Run CPU for given number of steps (instructions)
+    // Run N instructions
     void run(int steps);
 
-    // Reset CPU state to initial power-on condition
+    // Reset CPU
     void reset();
 
 private:
     CPURegisters* registers;
     Memory* memory;
 
-    // Fetch next opcode from memory at PC
     uint8_t fetch();
-
-    // Decode and execute given opcode
     void decodeRun(uint8_t opcode);
 
-    bool halted = false;  // HALT state flag
-    bool iem , imePending;
-    int cycle=0;
-    
+    bool halted = false;
+    bool ime = false;
+    bool imePending = false;
+    int cycles = 0;
+
     // 16-bit load
-    void LD_rr_d16();        // LD rr,d16
-    void LD_a16_SP();        // LD (a16),SP
-    void LD_HL_SP_r8();      // LD HL,SP+r8
-    void LD_rr_rr();         // LD rr,rr
+    void LD_rr_d16(Reg16 reg);
+    void LD_a16_SP();
+    void LD_HL_SP_r8();
+    void LD_SP_HL();
 
     // 8-bit load
-    void LD_pRR_r();         // LD (rr),r
-    void LD_r_pRR();         // LD r,(rr)
-    void LD_r_r();           // LD r,r
-    void LDH_pa8_r();        // LDH (a8),r
-    void LDH_r_pa8();        // LDH r,(a8)
-    void LD_A_pC();          // LD A,(C)
-    void LD_pC_A();          // LD (C),A
-    void LD_pa16_A();        // LD (a16),A
-    void LD_A_pa16();        // LD A,(a16)
+    void LD_pRR_r(Reg16 rr, Reg8 r);
+    void LD_r_pRR(Reg8 r, Reg16 rr);
+    void LD_r_r(Reg8 dst, Reg8 src);
+    void LD_r_d8(Reg8 r);
+    void LDH_pa8_a();
+    void LDH_a_pa8();
+    void LD_A_pC();
+    void LD_pC_A();
+    void LD_pa16_A();
+    void LD_A_pa16();
+    void LD_A_pHL_inc();
+    void LD_A_pHL_dec();
+    void LD_pHL_inc_A();
+    void LD_pHL_dec_A();
+    void LD_pHL_d8();
 
     // Miscellaneous
     void NOP();
@@ -86,20 +90,20 @@ private:
     void HALT();
 
     // Stack
-    void POP_rr();
-    void PUSH_rr();
+    void POP_rr(Reg16 rr);
+    void PUSH_rr(Reg16 rr);
 
     // JR Jumps
-    void JR_Nr_r8();
+    void JR_Nr_r8(Condition cond);
     void JR_r8();
 
     // JP Jumps
-    void JP_Nr_pa16();
+    void JP_Nr_pa16(Condition cond);
     void JP_HL();
     void JP_a16();
 
     // CALL
-    void CALL_Nr_a16();
+    void CALL_Nr_a16(Condition cond);
     void CALL_a16();
 
     // RET
@@ -110,32 +114,36 @@ private:
     // 16-bit Arithmetic
     void ADD_HL_rr(Reg16 reg);
     void ADD_SP_r8();
-    void INC_rr();
-    void DEC_rr();
+    void INC_rr(Reg16 reg);
+    void DEC_rr(Reg16 reg);
 
     // 8-bit Arithmetic
-    void ADD_r_r();
-    void ADD_r_pHL();
-    void SUB_r();
+    void ADD_r(Reg8 dst);
+    void ADD_pHL();
+    void ADD_r8();
+    void SUB_r(Reg8 src);
     void SUB_pHL();
-    void ADC_r();
+    void SUB_r8();
+    void ADC_r(Reg8 r);
     void ADC_pHL();
-    void SBC_r();
+    void ADC_r8();
+    void SBC_r(Reg8 r);
     void SBC_pHL();
-    void INC_r();
+    void INC_r(Reg8 r);
     void INC_pHL();
-    void DEC_r();
+    void DEC_r(Reg8 r);
     void DEC_pHL();
 
     // Logical instructions
-    void AND_r();
+    void AND_r(Reg8 r);
     void AND_pHL();
-    void OR_r();
+    void OR_r(Reg8 r);
     void OR_pHL();
-    void XOR_r();
+    void XOR_r(Reg8 r);
     void XOR_pHL();
-    void CP_r();
+    void CP_r(Reg8 r);
     void CP_pHL();
+    void CP_d8();
 
     // Rotate/Shift (CB prefix)
     void RLC_r();
@@ -156,6 +164,22 @@ private:
     void CCF();
     void SCF();
 
+    // Extra rotate operations (non-CB)
+    void RLCA();
+    void RLA();
+    void RRCA();
+    void RRA();
+
+    // Immediate variants of arithmetic instructions
+    void AND_d8();
+    void OR_d8();
+    void XOR_d8();
+    void SUB_d8();
+    void ADC_d8();
+    void SBC_d8();
+
+    // Restart instruction
+    void RST(uint8_t addr);
 };
 
 #endif //CPU_H
