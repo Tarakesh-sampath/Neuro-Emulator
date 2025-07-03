@@ -1,0 +1,96 @@
+// 16-bit load
+1.  LD rr,d16
+2.  LD (a16),SP
+3.  LD HL,SP+r8
+4.  LD rr,rr
+
+// 8-bit load
+5.  LD (rr),r
+6.  LD r,(rr)
+7.  LD r,r
+8.  LDH (a8),r
+9.  LDH r,(a8)
+10. LD A,(C)
+11. LD (C),A
+12. LD (a16),A
+13. LD A,(a16)
+
+// Miscellaneous
+14. NOP
+15. DI
+16. EI
+17. Prefix CB
+18. STOP 0
+19. HALT
+
+// Stack
+20. POP rr
+21. PUSH rr
+
+// JR Jumps
+22. JR Nr,r8
+23. JR r,a16
+24. JR r8
+
+// JP Jumps
+25. JP Nr,(a16)
+26. JP r,(a16)
+27. JP (HL)
+28. JP a16
+
+// CALL
+29. CALL Nr,a16
+30. CALL a16
+31. CALL Nr,a16 (conditional calls)
+
+// RET
+32. RET Nr
+33. RET r
+34. RET
+35. RETI
+
+// 16-bit Arithmetic
+38. ADD HL,rr
+39. ADD SP,r8
+40. INC rr
+41. DEC rr
+
+// 8-bit Arithmetic
+42. ADD r,r
+43. ADD r,(HL)
+44. SUB r
+45. SUB (HL)
+46. ADC r
+47. ADC (HL)
+48. SBC r
+49. SBC (HL)
+50. INC r
+51. INC (HL)
+52. DEC r
+53. DEC (HL)
+
+// Logical Instructions
+54. AND r
+55. AND (HL)
+56. OR r
+57. OR (HL)
+58. XOR r
+59. XOR (HL)
+60. CP r
+61. CP (HL)
+
+// Rotate/Shift (CB prefix)
+62. RLC r / RRC r
+63. RL r / RR r
+64. SLA r / SRA r
+65. SRL r
+66. SWAP r
+67. BIT n,r
+68. RES n,r
+69. SET n,r
+
+// Misc operations
+70. DAA
+71. CPL
+72. CCF
+73. SCF
