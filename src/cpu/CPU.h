@@ -38,13 +38,17 @@ public:
     CPU(Memory* mem, CPURegisters* regs);
 
     // Run one instruction step (fetch, decode, execute)
-    void step();
+    // Returns number of clock cycles consumed by the instruction
+    auto step() -> int;
 
     // Run N instructions
     void run(int steps);
 
     // Reset CPU
     void reset();
+
+    // Query whether the CPU is halted
+    auto isHalted() const -> bool;
 
 private:
     CPURegisters* registers;

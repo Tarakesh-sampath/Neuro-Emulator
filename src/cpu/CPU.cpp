@@ -27,12 +27,18 @@ uint8_t CPU::fetch() {
 }
 
 // Step: fetch, decode, execute one instruction
-void CPU::step() {
+auto CPU::step() -> int {
     if (halted)
-        return;  // CPU halted, do nothing
+        return 4;  // idle cost when halted
+
+    // Reset cycle counter for this instruction
+    cycles = 0;
 
     uint8_t opcode = fetch();
     decodeRun(opcode);
+
+    // Return cycles counted by instruction implementations
+    return cycles;
 }
 
 void CPU::run(int steps) {
@@ -1707,7 +1713,7 @@ void CPU::CALL_Nr_a16(Condition cond) {
     if (conditionMet) {
         // Push return address (PC after instruction, i.e. current PC) onto stack
 
-        // PC is currently after reading the 16-bit immediate — PC points to next instruction
+        // PC is currently after reading the 16-bit immediate ï¿½ PC points to next instruction
         uint16_t returnAddr = registers->getPC();
 
         // Decrement SP by 2 to make space on stack
@@ -1724,7 +1730,7 @@ void CPU::CALL_Nr_a16(Condition cond) {
         // CALL taken usually costs 24 cycles (6 machine cycles)
         cycles += 24;
     } else {
-        // Call not taken — PC already advanced past operand bytes, so do nothing special
+        // Call not taken ï¿½ PC already advanced past operand bytes, so do nothing special
         // Typical timing for conditional call not taken: 12 cycles (3 machine cycles)
         cycles += 12;
     }
@@ -3038,7 +3044,7 @@ void CPU::RLCA() {
     registers->setA(result);
 
     // Update flags according to GameBoy RLCA spec:
-    // Z - Reset (0) — RLCA does NOT affect zero flag
+    // Z - Reset (0) ï¿½ RLCA does NOT affect zero flag
     // N - Reset
     // H - Reset
     // C - Set if old bit 7 was 1
@@ -3176,4 +3182,9 @@ void CPU::PrefixCB() {
     // Update cycles according to each CB instruction specification
 
     // Optionally log CB prefix and instruction for ML dataset
+}
+
+// Return whether CPU is halted
+auto CPU::isHalted() const -> bool {
+    return halted;
 }
